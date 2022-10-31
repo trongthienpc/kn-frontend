@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setContainerClassnamesHelper } from "../helpers/menuHelper";
 
 const Sidebar = () => {
-  const [selectedParentMenu] = useState("");
-  const [viewingParentMenu] = useState("");
+  const [selectedParentMenu, setSelectedParentMenu] = useState("");
+  const [viewingParentMenu, setViewingParentMenu] = useState("");
 
   const dispatch = useDispatch();
   const menuSelector = useSelector((state) => state?.menu);
@@ -73,7 +73,11 @@ const Sidebar = () => {
       dispatch
     );
   };
-  const handleClick = (e) => {};
+  const handleClick = (id) => {
+    console.log(id);
+    setViewingParentMenu(id);
+    setSelectedParentMenu(id);
+  };
   return (
     <div className="sidebar">
       <div className="main-menu">
@@ -105,7 +109,7 @@ const Sidebar = () => {
                       ) : (
                         <NavLink
                           to={item.to}
-                          onClick={(e) => handleClick(e)}
+                          onClick={() => handleClick(item.id)}
                           data-flag={item.id}
                         >
                           <i className={item.icon} /> {item.label}

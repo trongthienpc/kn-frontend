@@ -1,4 +1,7 @@
-import { MENU_SET_CLASSNAMES } from "../store/reducers/menuSlice";
+import {
+  MENU_CLICK_MOBILE_MENU,
+  MENU_SET_CLASSNAMES,
+} from "../store/reducers/menuSlice";
 
 export const setContainerClassnamesHelper = (
   clickIndex,
@@ -90,6 +93,29 @@ export const setContainerClassnamesHelper = (
     MENU_SET_CLASSNAMES({
       containerClassnames: nextClasses,
       menuClickCount: clickIndex,
+    })
+  );
+};
+
+export const clickOnMobileMenuHelper = (strCurrentClasses, dispatch) => {
+  const currentClasses = strCurrentClasses
+    ? strCurrentClasses
+        .split(" ")
+        .filter((x) => x !== "" && x !== "sub-show-temporary")
+    : "";
+  let nextClasses = "";
+  if (currentClasses.includes("main-show-temporary")) {
+    nextClasses = currentClasses
+      .filter((x) => x !== "main-show-temporary")
+      .join(" ");
+  } else {
+    nextClasses = `${currentClasses.join(" ")} main-show-temporary`;
+  }
+
+  dispatch(
+    MENU_CLICK_MOBILE_MENU({
+      containerClassnames: nextClasses,
+      menuClickCount: 0,
     })
   );
 };

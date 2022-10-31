@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import {
   DropdownItem,
@@ -9,23 +10,24 @@ import {
 } from "reactstrap";
 import MenuIcon from "../components/svg/MenuIcon";
 import MobileMenuIcon from "../components/svg/MobileMenuIcon";
+import {
+  clickOnMobileMenuHelper,
+  setContainerClassnamesHelper,
+} from "../helpers/menuHelper";
 
-const Header = ({
-  clickOnMobileMenuAction,
-  setContainerClassnamesAction,
-  selectedMenuHasSubItems,
-  menuClickCount,
-  containerClassnames,
-  history,
-}) => {
+const Header = ({ history }) => {
   const menuHiddenBreakpoint = 768;
   const adminRoot = "/app";
   const searchPath = `${adminRoot}/pages/miscellaneous/search`;
   const handleLogout = () => {};
   const [searchKeyword, setSearchKeyword] = useState("");
+  const menuSelector = useSelector((state) => state.menu);
+  const { containerClassnames, menuClickCount, selectedMenuHasSubItems } =
+    menuSelector;
+  const dispatch = useDispatch();
   const mobileMenuButtonClick = (e, _containerClassnames) => {
     e.preventDefault();
-    clickOnMobileMenuAction(_containerClassnames);
+    clickOnMobileMenuHelper(_containerClassnames, dispatch);
   };
   const menuButtonClick = (e, _clickCount, _conClassnames) => {
     e.preventDefault();
@@ -35,10 +37,11 @@ const Header = ({
       event.initEvent("resize", false, false);
       window.dispatchEvent(event);
     }, 350);
-    setContainerClassnamesAction(
+    setContainerClassnamesHelper(
       _clickCount + 1,
       _conClassnames,
-      selectedMenuHasSubItems
+      selectedMenuHasSubItems,
+      dispatch
     );
   };
   const handleSearchInputKeyPress = (e) => {

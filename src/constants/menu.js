@@ -34,6 +34,12 @@ const data = [
     //   },
     // ],
   },
+  {
+    id: "services",
+    icon: "iconsminds-bucket",
+    label: "Dịch vụ",
+    to: `services`,
+  },
 
   {
     id: "blankpage",
