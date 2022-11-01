@@ -166,7 +166,7 @@ const Header = ({ history }) => {
                 <img alt="Profile" src="/assets/img/profiles/l-1.jpg" />
               </span>
             </DropdownToggle>
-            <DropdownMenu className="mt-3" end>
+            <DropdownMenu className="mt-3">
               <DropdownItem>Account</DropdownItem>
               <DropdownItem>Features</DropdownItem>
               <DropdownItem divider />

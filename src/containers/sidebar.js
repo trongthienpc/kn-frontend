@@ -65,7 +65,7 @@ const Sidebar = () => {
       return;
     }
     const nextClasses = getMenuClassesForResize(containerClassnames);
-    console.log(nextClasses);
+    // console.log(nextClasses);
     setContainerClassnamesHelper(
       0,
       nextClasses.join(" "),

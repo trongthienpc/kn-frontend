@@ -12,7 +12,7 @@ const menuSlice = createSlice({
     subHiddenBreakpoint,
     menuHiddenBreakpoint,
     menuClickCount: 0,
-    selectedMenuHasSubItems: defaultMenuType === "menu-default",
+    selectedMenuHasSubItems: defaultMenuType === "menu-default menu-sub-hidden",
   },
   reducers: {
     MENU_CHANGE_HAS_SUB_ITEM_STATUS: (state, action) => {

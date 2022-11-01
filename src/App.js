@@ -5,6 +5,9 @@ import AppLayout from "./layout/AppLayout";
 import Blank from "./pages/blank";
 import Dashboard from "./pages/dashboard";
 import { Suspense, useEffect } from "react";
+import Service from "./pages/service";
+import Login from "./pages/user/login";
+import UserLayout from "./layout/UserLayout";
 
 function App() {
   useEffect(() => {
@@ -18,6 +21,10 @@ function App() {
           <Route path="/" element={<AppLayout />}>
             <Route path="/home" element={<Dashboard />} />
             <Route path="/blank" element={<Blank />} />
+            <Route path="/services" element={<Service />} />
+          </Route>
+          <Route path="/" element={<UserLayout />}>
+            <Route path="/login" element={<Login />} />
           </Route>
         </Routes>
       </Suspense>
