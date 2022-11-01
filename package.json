@@ -50,6 +50,7 @@
     "react-router-dom": "^6.4.2",
     "react-select": "^5.5.8",
     "react-tagsinput": "^3.20.0",
+    "react-toastify": "^9.1.0",
     "reactstrap": "^8.9.0",
     "yup": "^0.32.11"
   }

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Row, Card, CardTitle, Label, FormGroup, Button } from "reactstrap";
-import { NavLink } from "react-router-dom";
-import { connect } from "react-redux";
-
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 import { Formik, Form, Field } from "formik";
 import { Colxx } from "../../components/common/CustomBootstrap";
+import { loginHelper } from "../../helpers/authHelper";
 
 const validatePassword = (value) => {
   let error;
@@ -36,20 +37,31 @@ const validateEmail = (value) => {
   return error;
 };
 
-const Login = ({ history, loading, error, loginUserAction }) => {
-  const [email] = useState("demo@gogo.com");
-  const [password] = useState("gogo123");
-  const [username] = useState("gogo123");
+const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  let from = location.state?.from || "/test";
 
-  const onUserLogin = (values) => {
-    if (!loading) {
-      if (values.email !== "" && values.password !== "") {
-        loginUserAction(values, history);
+  const authSelector = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (
+      authSelector &&
+      authSelector?.currentUser &&
+      authSelector?.currentUser?.accessToken
+    )
+      navigate(from);
+  }, []);
+
+  const onUserLogin = async (values) => {
+    console.log(values);
+    if (!authSelector?.loading) {
+      if (values.username !== "" && values.password !== "") {
+        loginHelper(values, dispatch, navigate, from);
       }
     }
   };
-
-  const initialValues = { username, password };
 
   return (
     <Row className="h-100">
@@ -69,8 +81,17 @@ const Login = ({ history, loading, error, loginUserAction }) => {
             </NavLink>
             <CardTitle className="mb-4">LOGIN</CardTitle>
 
-            <Formik initialValues={initialValues} onSubmit={onUserLogin}>
-              {({ errors, touched }) => (
+            <Formik
+              enableReinitialize={true}
+              initialValues={{
+                username: "Your username",
+                password: "Your password",
+              }}
+              onSubmit={(values) => {
+                onUserLogin(values);
+              }}
+            >
+              {({ errors, touched, handleSubmit, isSubmitting }) => (
                 <Form className="av-tooltip tooltip-label-bottom">
                   <FormGroup className="form-group has-float-label">
                     <Label>Username</Label>
@@ -103,12 +124,14 @@ const Login = ({ history, loading, error, loginUserAction }) => {
                     <NavLink to="/user/forgot-password">
                       Forgot your password?
                     </NavLink>
-                    <Button
+                    <button
                       color="primary"
                       className={`btn-shadow btn-multiple-state ${
-                        loading ? "show-spinner" : ""
+                        authSelector?.loading ? "show-spinner" : ""
                       }`}
                       size="lg"
+                      type="submit"
+                      // disabled={isSubmitting}
                     >
                       <span className="spinner d-inline-block">
                         <span className="bounce1" />
@@ -116,7 +139,7 @@ const Login = ({ history, loading, error, loginUserAction }) => {
                         <span className="bounce3" />
                       </span>
                       <span className="label">Login</span>
-                    </Button>
+                    </button>
                   </div>
                 </Form>
               )}
@@ -124,6 +147,7 @@ const Login = ({ history, loading, error, loginUserAction }) => {
           </div>
         </Card>
       </Colxx>
+      <ToastContainer />
     </Row>
   );
 };
