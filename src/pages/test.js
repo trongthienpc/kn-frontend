@@ -1,23 +1,11 @@
-import React, { useRef, useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import React, { useState } from "react";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const Dashboard = () => {
+const Modal = () => {
   const [modalBasic, setModalBasic] = useState(false);
-  const modalRef = useRef();
-  const handleModal = () => {
-    setModalBasic(!modalBasic);
-  };
   return (
     <div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum enim et
-      debitis praesentium quibusdam officiis aliquam sequi ipsum error! Dolor,
-      itaque repudiandae rerum a molestiae inventore harum veniam error modi.
-      <Button onClick={() => handleModal()}>Open modal</Button>
-      <Modal
-        isOpen={modalBasic}
-        toggle={() => setModalBasic(!modalBasic)}
-        ref={modalRef}
-      >
+      <Modal isOpen={modalBasic} toggle={() => setModalBasic(!modalBasic)}>
         <ModalHeader>Title</ModalHeader>
         <ModalBody>
           Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
@@ -41,4 +29,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Modal;

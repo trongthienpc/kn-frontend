@@ -9,12 +9,13 @@ import Service from "./pages/service";
 import Login from "./pages/user/login";
 import UserLayout from "./layout/UserLayout";
 import { useSelector } from "react-redux";
+import ServiceGroup from "./pages/serviceGroup";
 
 function RequireAuth({ children }) {
   let currentUser = useSelector((state) => state.auth?.currentUser);
-  console.log(currentUser);
+  // console.log(currentUser);
   const location = useLocation();
-  const from = location.pathname || "/home";
+  const from = location.pathname || "/";
   if (!currentUser?.accessToken)
     return <Navigate to="/login" state={{ from: from }} />;
   return children;
@@ -40,10 +41,9 @@ function App() {
             <Route path="/home" element={<Dashboard />} />
             <Route path="/blank" element={<Blank />} />
             <Route path="/services" element={<Service />} />
+            <Route path="/serviceGroups" element={<ServiceGroup />} />
           </Route>
-          <Route path="/" element={<UserLayout />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Suspense>
     </div>

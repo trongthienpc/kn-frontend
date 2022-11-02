@@ -25,7 +25,7 @@ const AddNewServiceModal = ({ modalOpen, toggleModal }) => {
         <Label>Tên dịch vụ</Label>
         <Input />
         <Label className="mt-4">Trạng thái</Label>
-        <CustomInput
+        {/* <CustomInput
           type="radio"
           id="exCustomRadio"
           name="customRadio"
@@ -36,7 +36,7 @@ const AddNewServiceModal = ({ modalOpen, toggleModal }) => {
           id="exCustomRadio2"
           name="customRadio"
           label="PROCESSED"
-        />
+        /> */}
       </ModalBody>
       <ModalFooter className="d-flex justify-content-between">
         <Button color="secondary" outline onClick={toggleModal}>

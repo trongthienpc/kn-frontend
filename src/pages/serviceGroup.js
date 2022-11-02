@@ -1,38 +1,19 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import ListPageHeading from "../components/common/ListPageHeading";
 import ListPageListing from "../components/common/ListPageListing";
-import AddNewServiceModal from "../containers/modals/AddNewServiceModal";
-import axios from "axios";
 import { servicePath } from "../constants/defaultValues";
-import { Label } from "reactstrap";
 import ServiceModal from "../containers/modals/ServiceModal";
-
+import { getServiceGroups } from "../helpers/serviceGroupHelper";
+import { createAxios } from "../helpers/tokenHelper";
 const orderOptions = [
   { column: "title", label: "Product Name" },
   { column: "category", label: "Category" },
   { column: "status", label: "Status" },
 ];
-
 const pageSizes = [4, 8, 12, 20];
-
-const categories = [
-  { label: "Cakes", value: "Cakes", key: 0 },
-  { label: "Cupcakes", value: "Cupcakes", key: 1 },
-  { label: "Desserts", value: "Desserts", key: 2 },
-];
-
-const getIndex = (value, arr, prop) => {
-  for (let i = 0; i < arr.length; i += 1) {
-    if (arr[i][prop] === value) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-const apiUrl = `${servicePath}/cakes/paging`;
-
-const Service = ({ match }) => {
+const ServiceGroup = ({ match }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState("list");
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,30 +33,53 @@ const Service = ({ match }) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedPageSize, selectedOrderOption]);
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth?.currentUser);
+  //   console.log(currentUser);
+
+  const groupSelector = useSelector((state) => state.group);
+  const axiosJWT = createAxios(currentUser, dispatch);
 
   useEffect(() => {
-    async function fetchData() {
-      axios
-        .get(
-          `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${selectedOrderOption.column}&search=${search}`
-        )
-        .then((res) => {
-          return res.data;
-        })
-        .then((data) => {
-          setTotalPage(data.totalPage);
-          setItems(
-            data.data.map((x) => {
-              return { ...x, img: x.img.replace("img/", "img/products/") };
-            })
-          );
-          setSelectedItems([]);
-          setTotalItemCount(data.totalItem);
-          setIsLoaded(true);
-        });
-    }
-    fetchData();
-  }, [selectedPageSize, currentPage, selectedOrderOption, search]);
+    getServiceGroups(
+      currentUser?.accessToken,
+      dispatch,
+      axiosJWT,
+      currentPage,
+      selectedPageSize,
+      search
+    );
+    setIsLoaded(true);
+  }, []);
+
+  //   useEffect(() => {
+  //   async function fetchData() {
+  //     axios
+  //       .get(
+  //         `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${selectedOrderOption.column}&search=${search}`
+  //       )
+  //       .then((res) => {
+  //         return res.data;
+  //       })
+  //       .then((data) => {
+  //         setTotalPage(data.totalPage);
+  //         setItems(
+  //           data.data.map((x) => {
+  //             return { ...x, img: x.img.replace("img/", "img/products/") };
+  //           })
+  //         );
+  //         setSelectedItems([]);
+  //         setTotalItemCount(data.totalItem);
+  //         setIsLoaded(true);
+  //       });
+  //   }
+  //   fetchData();
+  // setTotalPage(groupSelector?.totalPages);
+  // setItems(groupSelector?.groups);
+  // setSelectedItems([]);
+  // setTotalItemCount(groupSelector?.totalGroups);
+  // setIsLoaded(true);
+  //   }, [selectedPageSize, currentPage]);
 
   const handleChangeSelectAll = (isToggle) => {
     if (selectedItems.length >= items.length) {
@@ -88,7 +92,14 @@ const Service = ({ match }) => {
     document.activeElement.blur();
     return false;
   };
-
+  const getIndex = (value, arr, prop) => {
+    for (let i = 0; i < arr.length; i += 1) {
+      if (arr[i][prop] === value) {
+        return i;
+      }
+    }
+    return -1;
+  };
   const startIndex = (currentPage - 1) * selectedPageSize;
   const endIndex = currentPage * selectedPageSize;
 
@@ -148,7 +159,7 @@ const Service = ({ match }) => {
     <>
       <div className="disable-text-selection">
         <ListPageHeading
-          heading="menu.data-list"
+          heading="Nhóm dịch vụ"
           displayMode={displayMode}
           changeDisplayMode={setDisplayMode}
           handleChangeSelectAll={handleChangeSelectAll}
@@ -196,4 +207,4 @@ const Service = ({ match }) => {
   );
 };
 
-export default Service;
+export default ServiceGroup;

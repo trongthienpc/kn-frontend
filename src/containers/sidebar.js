@@ -26,7 +26,7 @@ const Sidebar = () => {
   }, []);
 
   const getMenuClassesForResize = (classes) => {
-    let nextClasses = classes.split(" ").filter((x) => x !== "");
+    let nextClasses = classes?.split(" ").filter((x) => x !== "");
     const windowWidth = window.innerWidth;
     if (windowWidth < menuHiddenBreakpoint) {
       nextClasses.push("menu-mobile");
@@ -39,12 +39,12 @@ const Sidebar = () => {
         nextClasses.push("menu-sub-hidden");
       }
     } else {
-      nextClasses = nextClasses.filter((x) => x !== "menu-mobile");
+      nextClasses = nextClasses?.filter((x) => x !== "menu-mobile");
       if (
-        nextClasses.includes("menu-default") &&
-        nextClasses.includes("menu-sub-hidden")
+        nextClasses?.includes("menu-default") &&
+        nextClasses?.includes("menu-sub-hidden")
       ) {
-        nextClasses = nextClasses.filter((x) => x !== "menu-sub-hidden");
+        // nextClasses = nextClasses.filter((x) => x !== "menu-sub-hidden");
       }
     }
     return nextClasses;
@@ -68,7 +68,7 @@ const Sidebar = () => {
     // console.log(nextClasses);
     setContainerClassnamesHelper(
       0,
-      nextClasses.join(" "),
+      nextClasses?.join(" "),
       selectedMenuHasSubItems,
       dispatch
     );

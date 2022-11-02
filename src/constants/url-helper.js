@@ -20,11 +20,11 @@ export const POST_EDIT_PROFILE = "/post-fake-profile";
 // CATEGORY
 export const GET_CATEGORY = "category";
 
-// CUSTOMER
-export const GET_CUSTOMERS = "customer";
-export const ADD_CUSTOMER = "customer";
-export const DEL_CUSTOMER = "customer";
-export const UPDATE_CUSTOMER = "customer";
+// GROUP
+export const GET_GROUP = "service-group";
+export const ADD_GROUP = "service-group";
+export const DEL_GROUP = "service-group";
+export const UPDATE_GROUP = "service-group";
 
 // function
 export const FUNCTIONS = "function";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   DropdownItem,
   DropdownMenu,
@@ -10,25 +10,34 @@ import {
 } from "reactstrap";
 import MenuIcon from "../components/svg/MenuIcon";
 import MobileMenuIcon from "../components/svg/MobileMenuIcon";
+import { logOutHelper } from "../helpers/authHelper";
 import {
   clickOnMobileMenuHelper,
   setContainerClassnamesHelper,
 } from "../helpers/menuHelper";
 
 const Header = ({ history }) => {
+  const currentUser = useSelector((state) => state.auth?.currentUser);
+  const dispatch = useDispatch();
+
   const menuHiddenBreakpoint = 768;
   const adminRoot = "/app";
   const searchPath = `${adminRoot}/pages/miscellaneous/search`;
-  const handleLogout = () => {};
+
   const [searchKeyword, setSearchKeyword] = useState("");
   const menuSelector = useSelector((state) => state.menu);
   const { containerClassnames, menuClickCount, selectedMenuHasSubItems } =
     menuSelector;
-  const dispatch = useDispatch();
+
   const mobileMenuButtonClick = (e, _containerClassnames) => {
     e.preventDefault();
     clickOnMobileMenuHelper(_containerClassnames, dispatch);
   };
+
+  const handleLogout = () => {
+    logOutHelper(dispatch, currentUser?.id, currentUser?.accessToken);
+  };
+
   const menuButtonClick = (e, _clickCount, _conClassnames) => {
     e.preventDefault();
 
@@ -139,7 +148,7 @@ const Header = ({ history }) => {
           <Input
             name="searchKeyword"
             id="searchKeyword"
-            placeholder={"menu.search"}
+            placeholder={"search ..."}
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
             onKeyPress={(e) => handleSearchInputKeyPress(e)}

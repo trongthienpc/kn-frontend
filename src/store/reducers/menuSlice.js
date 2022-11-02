@@ -8,7 +8,7 @@ import {
 const menuSlice = createSlice({
   name: "menu",
   initialState: {
-    containerClassnames: defaultMenuType,
+    containerClassnames: "menu-default menu-sub-hidden",
     subHiddenBreakpoint,
     menuHiddenBreakpoint,
     menuClickCount: 0,

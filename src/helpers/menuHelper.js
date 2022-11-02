@@ -38,7 +38,7 @@ export const setContainerClassnamesHelper = (
     ) {
       nextClasses = "menu-default menu-sub-hidden";
     } else if (currentClasses.includes("menu-default")) {
-      nextClasses = "menu-default";
+      nextClasses = "menu-default menu-sub-hidden";
     } else if (currentClasses.includes("menu-sub-hidden")) {
       nextClasses = "menu-sub-hidden";
     } else if (currentClasses.includes("menu-hidden")) {

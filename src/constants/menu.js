@@ -35,6 +35,12 @@ const data = [
     // ],
   },
   {
+    id: "serviceGroups",
+    icon: "iconsminds-bucket",
+    label: "Nhóm dịch vụ",
+    to: `serviceGroups`,
+  },
+  {
     id: "services",
     icon: "iconsminds-bucket",
     label: "Dịch vụ",

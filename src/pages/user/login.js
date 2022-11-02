@@ -41,7 +41,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  let from = location.state?.from || "/test";
+  let from = location.state?.from || "/";
 
   const authSelector = useSelector((state) => state.auth);
 
@@ -54,8 +54,18 @@ const Login = () => {
       navigate(from);
   }, []);
 
+  useEffect(() => {
+    document.body.classList.add("background");
+    document.body.classList.add("no-footer");
+
+    return () => {
+      document.body.classList.remove("background");
+      document.body.classList.remove("no-footer");
+    };
+  }, []);
+
   const onUserLogin = async (values) => {
-    console.log(values);
+    // console.log(values);
     if (!authSelector?.loading) {
       if (values.username !== "" && values.password !== "") {
         loginHelper(values, dispatch, navigate, from);
@@ -64,91 +74,98 @@ const Login = () => {
   };
 
   return (
-    <Row className="h-100">
-      <Colxx xxs="12" md="10" className="mx-auto my-auto">
-        <Card className="auth-card">
-          <div className="position-relative image-side ">
-            <p className="text-white h4 mt-5">LONG TIME NO SEE</p>
-            <p className="white mb-0 mt-5">
-              Dùng mã nhân viên dể đăng nhập.
-              <br />
-              Nếu bạn chưa có hãy gọi Kiều Như nhé! .
-            </p>
-          </div>
-          <div className="form-side">
-            <NavLink to="/" className="white">
-              <span className="logo-single" />
-            </NavLink>
-            <CardTitle className="mb-4">LOGIN</CardTitle>
+    <>
+      <div className="fixed-background" />
+      <main>
+        <div className="container">
+          <Row className="h-100">
+            <Colxx xxs="12" md="10" className="mx-auto my-auto">
+              <Card className="auth-card">
+                <div className="position-relative image-side ">
+                  <p className="text-white h4 mt-5">LONG TIME NO SEE</p>
+                  <p className="white mb-0 mt-5">
+                    Dùng mã nhân viên dể đăng nhập.
+                    <br />
+                    Nếu bạn chưa có hãy gọi Kiều Như nhé! .
+                  </p>
+                </div>
+                <div className="form-side">
+                  <NavLink to="/" className="white">
+                    <span className="logo-single" />
+                  </NavLink>
+                  <CardTitle className="mb-4">LOGIN</CardTitle>
 
-            <Formik
-              enableReinitialize={true}
-              initialValues={{
-                username: "Your username",
-                password: "Your password",
-              }}
-              onSubmit={(values) => {
-                onUserLogin(values);
-              }}
-            >
-              {({ errors, touched, handleSubmit, isSubmitting }) => (
-                <Form className="av-tooltip tooltip-label-bottom">
-                  <FormGroup className="form-group has-float-label">
-                    <Label>Username</Label>
-                    <Field
-                      className="form-control"
-                      name="username"
-                      validate={validateUsername}
-                    />
-                    {errors.username && touched.username && (
-                      <div className="invalid-feedback d-block">
-                        {errors.username}
-                      </div>
+                  <Formik
+                    enableReinitialize={true}
+                    initialValues={{
+                      username: "PC-01416",
+                      password: "123456",
+                    }}
+                    onSubmit={(values) => {
+                      onUserLogin(values);
+                    }}
+                  >
+                    {({ errors, touched, handleSubmit, isSubmitting }) => (
+                      <Form className="av-tooltip tooltip-label-bottom">
+                        <FormGroup className="form-group has-float-label">
+                          <Label>Username</Label>
+                          <Field
+                            className="form-control"
+                            name="username"
+                            validate={validateUsername}
+                          />
+                          {errors.username && touched.username && (
+                            <div className="invalid-feedback d-block">
+                              {errors.username}
+                            </div>
+                          )}
+                        </FormGroup>
+                        <FormGroup className="form-group has-float-label">
+                          <Label>Password</Label>
+                          <Field
+                            className="form-control"
+                            type="password"
+                            name="password"
+                            validate={validatePassword}
+                          />
+                          {errors.password && touched.password && (
+                            <div className="invalid-feedback d-block">
+                              {errors.password}
+                            </div>
+                          )}
+                        </FormGroup>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <NavLink to="/user/forgot-password">
+                            Forgot your password?
+                          </NavLink>
+                          <Button
+                            color="primary"
+                            className={`btn-shadow btn-multiple-state ${
+                              authSelector?.loading ? "show-spinner" : ""
+                            }`}
+                            size="lg"
+                            type="submit"
+                            // disabled={isSubmitting}
+                          >
+                            <span className="spinner d-inline-block">
+                              <span className="bounce1" />
+                              <span className="bounce2" />
+                              <span className="bounce3" />
+                            </span>
+                            <span className="label">Login</span>
+                          </Button>
+                        </div>
+                      </Form>
                     )}
-                  </FormGroup>
-                  <FormGroup className="form-group has-float-label">
-                    <Label>Password</Label>
-                    <Field
-                      className="form-control"
-                      type="password"
-                      name="password"
-                      validate={validatePassword}
-                    />
-                    {errors.password && touched.password && (
-                      <div className="invalid-feedback d-block">
-                        {errors.password}
-                      </div>
-                    )}
-                  </FormGroup>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <NavLink to="/user/forgot-password">
-                      Forgot your password?
-                    </NavLink>
-                    <button
-                      color="primary"
-                      className={`btn-shadow btn-multiple-state ${
-                        authSelector?.loading ? "show-spinner" : ""
-                      }`}
-                      size="lg"
-                      type="submit"
-                      // disabled={isSubmitting}
-                    >
-                      <span className="spinner d-inline-block">
-                        <span className="bounce1" />
-                        <span className="bounce2" />
-                        <span className="bounce3" />
-                      </span>
-                      <span className="label">Login</span>
-                    </button>
-                  </div>
-                </Form>
-              )}
-            </Formik>
-          </div>
-        </Card>
-      </Colxx>
-      <ToastContainer />
-    </Row>
+                  </Formik>
+                </div>
+              </Card>
+            </Colxx>
+            <ToastContainer />
+          </Row>
+        </div>
+      </main>
+    </>
   );
 };
 

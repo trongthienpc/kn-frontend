@@ -15,6 +15,7 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       toast.success(action.payload.message);
+      // console.log(action.payload.data);
       state.success = true;
       state.message = "login successfully!";
       state.currentUser = action.payload.data;
