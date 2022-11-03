@@ -5,7 +5,12 @@ import classnames from "classnames";
 import { ContextMenuTrigger } from "react-contextmenu";
 import { Colxx } from "./CustomBootstrap";
 
-const DataListView = ({ product, isSelect, collect, onCheckItem }) => {
+const ServiceGroupDataListView = ({
+  product,
+  isSelect,
+  collect,
+  onCheckItem,
+}) => {
   console.log(product);
 
   return (
@@ -25,8 +30,8 @@ const DataListView = ({ product, isSelect, collect, onCheckItem }) => {
                 </p>
               </NavLink>
               <div className="w-15 w-sm-100">
-                <Badge color={product.statusColor} pill>
-                  {product.status}
+                <Badge color={product.status ? "primary" : "secondary"} pill>
+                  {product.status ? "Kích hoạt" : " Tạm dừng"}
                 </Badge>
               </div>
             </div>
@@ -48,4 +53,4 @@ const DataListView = ({ product, isSelect, collect, onCheckItem }) => {
 };
 
 /* React.memo detail : https://reactjs.org/docs/react-api.html#reactpurecomponent  */
-export default React.memo(DataListView);
+export default React.memo(ServiceGroupDataListView);

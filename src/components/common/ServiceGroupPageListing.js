@@ -1,16 +1,16 @@
 import React from "react";
 import { Row } from "reactstrap";
 import ContextMenuContainer from "./ContextMenuContainer";
-import DataListView from "./DataListView";
 import ImageListView from "./ImageListView";
 import Pagination from "./Pagination";
+import ServiceGroupDataListView from "./ServiceGroupDataListView";
 import ThumbListView from "./ThumbListView";
 
 function collect(props) {
   return { data: props.data };
 }
 
-const ListPageListing = ({
+const ServiceGroupPageListing = ({
   items,
   displayMode,
   selectedItems,
@@ -48,7 +48,7 @@ const ListPageListing = ({
           );
         }
         return (
-          <DataListView
+          <ServiceGroupDataListView
             key={product.id}
             product={product}
             isSelect={selectedItems.includes(product.id)}
@@ -70,4 +70,4 @@ const ListPageListing = ({
   );
 };
 
-export default React.memo(ListPageListing);
+export default React.memo(ServiceGroupPageListing);

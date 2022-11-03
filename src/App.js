@@ -4,7 +4,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import Blank from "./pages/blank";
 import Dashboard from "./pages/dashboard";
-import { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import Service from "./pages/service";
 import Login from "./pages/user/login";
 import UserLayout from "./layout/UserLayout";
@@ -21,6 +21,8 @@ function RequireAuth({ children }) {
   return children;
 }
 
+const LayoutContainer = React.lazy(() => import("./layout/AppLayout"));
+
 function App() {
   useEffect(() => {
     document.body.classList.add("ltr");
@@ -34,14 +36,14 @@ function App() {
             path="/"
             element={
               <RequireAuth>
-                <AppLayout />
+                <LayoutContainer />
               </RequireAuth>
             }
           >
             <Route path="/home" element={<Dashboard />} />
-            <Route path="/blank" element={<Blank />} />
             <Route path="/services" element={<Service />} />
             <Route path="/serviceGroups" element={<ServiceGroup />} />
+            <Route path="/blank" element={<Blank />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>

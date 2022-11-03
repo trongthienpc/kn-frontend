@@ -21,7 +21,7 @@ const refreshToken = async (dispatch) => {
         withCredentials: true,
       }
     );
-    console.log(res.data);
+    // console.log(res.data);
     return res.data;
   } catch (error) {
     dispatch(refreshTokeFailed(error?.response?.data?.message));
@@ -30,23 +30,23 @@ const refreshToken = async (dispatch) => {
 };
 
 export const createAxios = (user, dispatch) => {
-  console.log(user);
+  // console.log(user);
   const newInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
-    withCredentials: true,
+    // withCredentials: true,
     // headers: { "Content-Type": "application/json" },
   });
   // Add a request interceptor
-  newInstance.defaults.withCredentials = true;
+  // newInstance.defaults.withCredentials = true;
   newInstance.interceptors.request.use(
     async (config) => {
       let date = new Date();
-
       const decodedToken = jwt_decode(user?.accessToken);
-      // console.log("decodedToken", decodedToken);
+
       if (decodedToken?.exp < date.getTime() / 1000) {
+        // console.log("time expired");
         const data = await refreshToken(dispatch);
-        console.log(data);
+        // console.log(data);
         const refreshUser = {
           ...user,
           accessToken: data?.accessToken,

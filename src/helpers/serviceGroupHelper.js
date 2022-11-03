@@ -1,4 +1,4 @@
-import axios from "axios";
+import data from "../constants/menu";
 import * as url from "../constants/url-helper";
 // @desc get all service groups
 
@@ -32,8 +32,11 @@ export const getServiceGroups = async (
   // action ...
   try {
     const results = await axiosJWT.get(
-      `${process.env.REACT_APP_BASE_URL}/${url.GET_GROUP}?page=${page}&pageSize=${pageSize}&search=${search}`,
-      { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
+      `/${url.GET_GROUP}?page=${page}&pageSize=${pageSize}&search=${search}`,
+      {
+        headers: { token: `Bearer ${accessToken}` },
+        withCredentials: true,
+      }
     );
 
     // action success
@@ -57,12 +60,15 @@ export const addServiceGroup = async (
 
   // action body ....
   try {
-    const results = await axiosJWT.post(
-      `${process.env.REACT_APP_BASE_URL}/${url.ADD_GROUP}`,
-      group,
-      { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
-    );
-    if (results?.success) dispatch(addServiceGroupSuccess(group));
+    const result = await axiosJWT.post(`/${url.ADD_GROUP}`, group, {
+      headers: { token: `Bearer ${accessToken}` },
+      withCredentials: true,
+    });
+    if (result?.data?.success) dispatch(addServiceGroupSuccess(group));
+    else
+      dispatch(
+        addServiceGroupFailed(result?.data?.message || "Thêm mới thất bại rồi!")
+      );
   } catch (err) {
     dispatch(addServiceGroupFailed(err?.response?.data?.message));
   }

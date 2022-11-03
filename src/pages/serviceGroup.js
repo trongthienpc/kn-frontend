@@ -1,27 +1,23 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 import ListPageHeading from "../components/common/ListPageHeading";
 import ListPageListing from "../components/common/ListPageListing";
+import ServiceGroupPageListing from "../components/common/ServiceGroupPageListing";
 import { servicePath } from "../constants/defaultValues";
-import ServiceModal from "../containers/modals/ServiceModal";
+import ServiceGroupModal from "../containers/modals/ServiceGroupModal";
 import { getServiceGroups } from "../helpers/serviceGroupHelper";
 import { createAxios } from "../helpers/tokenHelper";
-const orderOptions = [
-  { column: "title", label: "Product Name" },
-  { column: "category", label: "Category" },
-  { column: "status", label: "Status" },
-];
+
 const pageSizes = [4, 8, 12, 20];
 const ServiceGroup = ({ match }) => {
+  const [isEdit, setIsEdit] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPageSize, setSelectedPageSize] = useState(8);
-  const [selectedOrderOption, setSelectedOrderOption] = useState({
-    column: "title",
-    label: "Product Name",
-  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [totalItemCount, setTotalItemCount] = useState(0);
   const [totalPage, setTotalPage] = useState(1);
@@ -29,16 +25,23 @@ const ServiceGroup = ({ match }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [items, setItems] = useState([]);
   const [lastChecked, setLastChecked] = useState(null);
+  const [group, setGroup] = useState({});
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedPageSize, selectedOrderOption]);
+  const startIndex = (currentPage - 1) * selectedPageSize;
+  const endIndex = currentPage * selectedPageSize;
+
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [selectedPageSize]);
+
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth?.currentUser);
-  //   console.log(currentUser);
 
-  const groupSelector = useSelector((state) => state.group);
+  const groupSelector = useSelector((state) => state.serviceGroup);
+  console.log(groupSelector);
+
   const axiosJWT = createAxios(currentUser, dispatch);
+  // console.log("object");
 
   useEffect(() => {
     getServiceGroups(
@@ -81,17 +84,6 @@ const ServiceGroup = ({ match }) => {
   // setIsLoaded(true);
   //   }, [selectedPageSize, currentPage]);
 
-  const handleChangeSelectAll = (isToggle) => {
-    if (selectedItems.length >= items.length) {
-      if (isToggle) {
-        setSelectedItems([]);
-      }
-    } else {
-      setSelectedItems(items.map((x) => x.id));
-    }
-    document.activeElement.blur();
-    return false;
-  };
   const getIndex = (value, arr, prop) => {
     for (let i = 0; i < arr.length; i += 1) {
       if (arr[i][prop] === value) {
@@ -100,8 +92,6 @@ const ServiceGroup = ({ match }) => {
     }
     return -1;
   };
-  const startIndex = (currentPage - 1) * selectedPageSize;
-  const endIndex = currentPage * selectedPageSize;
 
   const onCheckItem = (event, id) => {
     if (
@@ -140,8 +130,24 @@ const ServiceGroup = ({ match }) => {
   };
 
   const onContextMenuClick = (e, data) => {
-    console.log("onContextMenuClick - selected items", selectedItems);
-    console.log("onContextMenuClick - action : ", data.action);
+    switch (data.action) {
+      case "delete":
+        console.log("onContextMenuClick - action : ", data.action);
+        break;
+
+      default:
+        if (selectedItems.length > 1) {
+          console.log("Chỉ chọn 1 dòng khi cập nhật");
+          break;
+        }
+        const temp = groupSelector.groups.filter(
+          (g) => g.id === selectedItems[0]
+        );
+        setGroup(temp);
+        setIsEdit(true);
+        setModalOpen(true);
+        break;
+    }
   };
 
   const onContextMenu = (e, data) => {
@@ -162,16 +168,9 @@ const ServiceGroup = ({ match }) => {
           heading="Nhóm dịch vụ"
           displayMode={displayMode}
           changeDisplayMode={setDisplayMode}
-          handleChangeSelectAll={handleChangeSelectAll}
-          changeOrderBy={(column) => {
-            setSelectedOrderOption(
-              orderOptions.find((x) => x.column === column)
-            );
-          }}
           changePageSize={setSelectedPageSize}
           selectedPageSize={selectedPageSize}
           totalItemCount={totalItemCount}
-          selectedOrderOption={selectedOrderOption}
           match={match}
           startIndex={startIndex}
           endIndex={endIndex}
@@ -182,17 +181,21 @@ const ServiceGroup = ({ match }) => {
               setSearch(e.target.value.toLowerCase());
             }
           }}
-          orderOptions={orderOptions}
+          setIsEdit={setIsEdit}
           pageSizes={pageSizes}
           toggleModal={() => setModalOpen(!modalOpen)}
         />
-        <ServiceModal
+        <ServiceGroupModal
           modalOpen={modalOpen}
           toggleModal={() => setModalOpen(!modalOpen)}
+          axiosJWT={axiosJWT}
+          dispatch={dispatch}
+          isEdit={isEdit}
+          object={group}
           // categories={categories}
         />
-        <ListPageListing
-          items={items}
+        <ServiceGroupPageListing
+          items={groupSelector?.groups}
           displayMode={displayMode}
           selectedItems={selectedItems}
           onCheckItem={onCheckItem}
@@ -203,6 +206,7 @@ const ServiceGroup = ({ match }) => {
           onChangePage={setCurrentPage}
         />
       </div>
+      <ToastContainer />
     </>
   );
 };
