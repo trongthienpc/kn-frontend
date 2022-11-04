@@ -1,17 +1,22 @@
 import { Field, Form, Formik, useField, useFormikContext } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { NumericFormat } from "react-number-format";
 import { useSelector } from "react-redux";
 // import { useSelector } from "react-redux";
 import {
   Button,
   FormGroup,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
   ModalHeader,
 } from "reactstrap";
 import * as Yup from "yup";
-import { addTransaction } from "../../helpers/transactionHelper";
+import {
+  addTransaction,
+  updateTransaction,
+} from "../../helpers/transactionHelper";
 // import { NumericFormat } from "react-number-format";
 import {
   FormikCustomRadioGroup,
@@ -26,7 +31,7 @@ const options = [
 
 const TransactionModal = ({
   modalOpen,
-  toggleModal,
+  setModalOpen,
   axiosJWT,
   dispatch,
   isEdit,
@@ -44,12 +49,12 @@ const TransactionModal = ({
 
     React.useEffect(() => {
       // set the value of textC, based on textA and textB
-      if (service?.value !== null && touched.service) {
+      if (service?.value !== null && touched.service && modalOpen) {
         const s = services.filter((s) => s.id === service.value);
         // console.log(service);
-        setFieldValue(props.name, s[0]?.price);
+        setFieldValue(props.name, s[0]?.price || 0);
       }
-    }, [service, touched.service, props.name]);
+    }, [service, touched.service, props.name, setFieldValue]);
 
     return (
       <>
@@ -95,18 +100,22 @@ const TransactionModal = ({
   const [lstService, setLstService] = useState([]);
   const currentUser = useSelector((state) => state.auth?.currentUser);
   const [transaction, setTransaction] = useState(object);
-
+  const autoFocusRef = useRef();
   useEffect(() => {
     const temp = services.map((s) => {
       return { value: s.id, label: s.serviceName };
     });
     setLstService(temp);
+    if (object) setTransaction(object);
   }, []);
 
   useEffect(() => {
-    setTransaction(object[0]);
-    console.log(object);
+    setTransaction(object);
   }, [object]);
+
+  useEffect(() => {
+    if (autoFocusRef.current) autoFocusRef.current.focus();
+  }, [autoFocusRef]);
 
   // add new transaction
   const onAddTransaction = async (g) => {
@@ -135,31 +144,61 @@ const TransactionModal = ({
   };
 
   // update old transaction
-  const onUpdateTransaction = (g) => {
-    console.log(g);
+  const onUpdateTransaction = async (g) => {
+    console.log(modalOpen);
+    const entity = {
+      id: g.id,
+      serviceId: g.service?.value,
+      serviceName: g.service?.label,
+      price: g.price,
+      quantity: g.quantity,
+      discount: g.discount,
+      cash: g.cash,
+      debt: g.debt,
+      transactionDate: new Date(g.transactionDate),
+      userId: currentUser.id,
+      username: currentUser.username,
+      fullName: currentUser.name,
+      customerName: g.customerName,
+      status: g.status,
+      createdBy: currentUser.username,
+    };
+    await updateTransaction(
+      currentUser?.accessToken,
+      dispatch,
+      axiosJWT,
+      entity
+    );
+    setModalOpen(false);
   };
 
   return (
     <Modal
       isOpen={modalOpen}
-      toggle={toggleModal}
+      toggle={() => setModalOpen(!modalOpen)}
       wrapClassName="modal-right"
       backdrop="static"
+      autoFocus={true}
     >
-      <ModalHeader toggle={toggleModal}>
+      <ModalHeader toggle={() => setModalOpen(false)}>
         {!!isEdit ? "Cập nhật giao dịch" : "Thêm mới giao dịch"}
       </ModalHeader>
       <ModalBody>
         <Formik
           enableReinitialize={true}
           initialValues={{
-            customerName: !!isEdit ? transaction?.customerName : "",
-            service: !!isEdit ? transaction?.service : {},
-            price: !!isEdit ? transaction?.price : 0,
-            quantity: !!isEdit ? transaction?.quantity : 0,
-            discount: !!isEdit ? transaction?.discount : 0,
-            cash: !!isEdit ? transaction?.cash : 0,
-            debt: !!isEdit ? transaction?.debt : 0,
+            customerName: !!isEdit ? transaction?.customerName || "" : "",
+            service: !!isEdit
+              ? {
+                  value: transaction?.serviceId,
+                  label: transaction.serviceName,
+                }
+              : {},
+            price: !!isEdit ? transaction?.price || 0 : 0,
+            quantity: !!isEdit ? transaction?.quantity || 0 : 0,
+            discount: !!isEdit ? transaction?.discount || 0 : 0,
+            cash: !!isEdit ? transaction?.cash || 0 : 0,
+            debt: !!isEdit ? transaction?.debt || 0 : 0,
             transactionDate: !!isEdit
               ? new Date(transaction?.transactionDate).getTime()
               : Date.now(),
@@ -220,6 +259,7 @@ const TransactionModal = ({
                   id="customerName"
                   type="text"
                   value={values?.customerName || ""}
+                  innerRef={autoFocusRef}
                 />
                 {errors.customerName && touched.customerName && (
                   <div className="invalid-feedback d-block">
@@ -232,7 +272,7 @@ const TransactionModal = ({
                 <FormikReactSelect
                   name="service"
                   id="service"
-                  value={values.service || null}
+                  value={values?.service || null}
                   options={lstService}
                   onChange={setFieldValue}
                   onBlur={setFieldTouched}
@@ -245,13 +285,27 @@ const TransactionModal = ({
               </FormGroup>
               <FormGroup className="error-l-100">
                 <Label>Giá dịch vụ</Label>
-                <PriceField
-                  className="form-control"
-                  name="price"
-                  // id="price"
-                  // type="number"
-                  value={values?.price}
-                />
+                <InputGroup>
+                  <PriceField
+                    className="form-control"
+                    name="price"
+                    id="price"
+                    type="number"
+                    value={values?.price || 0}
+                    onChange={setFieldValue}
+                  />
+                  <NumericFormat
+                    value={values?.price || 0}
+                    allowLeadingZeros={false}
+                    thousandSeparator={true}
+                    // name="discount"
+                    className="form-control font-weight-bold"
+                    onValueChange={(values) => {
+                      const { value } = values;
+                      setFieldValue("price", value);
+                    }}
+                  />
+                </InputGroup>
                 {errors.price && touched.price && (
                   <div className="invalid-feedback d-block">{errors.price}</div>
                 )}
@@ -273,25 +327,27 @@ const TransactionModal = ({
               </FormGroup>
               <FormGroup className="error-l-100">
                 <Label>Giảm giá</Label>
-                {/* <NumericFormat
-                  value={values?.discount || 0}
-                  allowLeadingZeros
-                  thousandSeparator={true}
-                  name="discount"
-                  className="form-control"
-                  onValueChange={(values) => {
-                    const { value } = values;
-                    setFieldValue("discount", value);
-                  }}
-                /> */}
 
-                <Field
-                  className="form-control"
-                  name="discount"
-                  id="discount"
-                  type="number"
-                  value={values?.discount || 0}
-                />
+                <InputGroup>
+                  <Field
+                    className="form-control"
+                    name="discount"
+                    id="discount"
+                    type="number"
+                    value={values?.discount || 0}
+                  />
+                  <NumericFormat
+                    value={values?.discount || 0}
+                    allowLeadingZeros={false}
+                    thousandSeparator={true}
+                    // name="discount"
+                    className="form-control font-weight-bold"
+                    onValueChange={(values) => {
+                      const { value } = values;
+                      setFieldValue("discount", value);
+                    }}
+                  />
+                </InputGroup>
                 {errors.discount && touched.discount && (
                   <div className="invalid-feedback d-block">
                     {errors.discount}
@@ -300,30 +356,60 @@ const TransactionModal = ({
               </FormGroup>
               <FormGroup className="error-l-100">
                 <Label>Tiền mặt</Label>
-                <Field
-                  className="form-control"
-                  name="cash"
-                  id="cash"
-                  type="number"
-                  value={values?.cash || 0}
-                />
+                <InputGroup>
+                  <Field
+                    className="form-control"
+                    name="cash"
+                    id="cash"
+                    type="number"
+                    value={values?.cash || 0}
+                  />
+                  <NumericFormat
+                    readOnly
+                    value={values?.cash || 0}
+                    allowLeadingZeros={false}
+                    thousandSeparator={true}
+                    // name="debt"
+                    className="form-control font-weight-bold"
+                    onValueChange={(values) => {
+                      const { value } = values;
+                      setFieldValue("cash", value);
+                    }}
+                  />
+                </InputGroup>
                 {errors.cash && touched.cash && (
                   <div className="invalid-feedback d-block">{errors.cash}</div>
                 )}
               </FormGroup>
               <FormGroup className="error-l-100">
                 <Label>Thiếu lại</Label>
-                {/* <Field
-                  className="form-control"
-                  name="debt"
-                  id="debt"
-                  type="number"
-                  value={values?.debt || 0}
-                /> */}
-                <DebtField className="form-control" name="debt" />
-                {errors.debt && touched.debt && (
-                  <div className="invalid-feedback d-block">{errors.debt}</div>
-                )}
+                <InputGroup>
+                  {/* <Field
+                    className="form-control"
+                    name="debt"
+                    id="debt"
+                    type="number"
+                    value={values?.debt || 0}
+                  /> */}
+                  <DebtField className="form-control" name="debt" />
+                  <NumericFormat
+                    readOnly
+                    value={values?.debt || 0}
+                    allowLeadingZeros
+                    thousandSeparator={true}
+                    // name="debt"
+                    className="form-control font-weight-bold"
+                    onValueChange={(values) => {
+                      const { value } = values;
+                      setFieldValue("debt", value);
+                    }}
+                  />
+                  {errors.debt && touched.debt && (
+                    <div className="invalid-feedback d-block">
+                      {errors.debt}
+                    </div>
+                  )}
+                </InputGroup>
               </FormGroup>
               <FormGroup className="error-l-100">
                 <Label className="d-block">Ngày giao dịch</Label>
@@ -339,26 +425,12 @@ const TransactionModal = ({
                   </div>
                 ) : null}
               </FormGroup>
-              <FormGroup className="error-l-175">
-                <Label className="d-block">Trạng thái</Label>
-                <FormikCustomRadioGroup
-                  inline
-                  name="status"
-                  id="status"
-                  label="Trạng thái"
-                  value={values.status}
-                  onChange={setFieldValue}
-                  onBlur={setFieldTouched}
-                  options={options}
-                />
-                {errors.status && touched.status ? (
-                  <div className="invalid-feedback d-block">
-                    {errors.status}
-                  </div>
-                ) : null}
-              </FormGroup>
               <div className="d-flex justify-content-between mt-5">
-                <Button color="secondary" type="submit" onClick={toggleModal}>
+                <Button
+                  color="secondary"
+                  // type="submit"
+                  onClick={() => setModalOpen(false)}
+                >
                   Hủy
                 </Button>
                 <Button color="primary" type="submit">

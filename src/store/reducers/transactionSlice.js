@@ -83,7 +83,7 @@ const transactionSlice = createSlice({
       state.message = "Updated the transaction successfully";
       state.transactions = [
         action.payload,
-        ...state.transactions.filter((x) => x.value !== action.payload.value),
+        ...state.transactions.filter((x) => x.id !== action.payload.id),
       ];
     },
     updateTransactionFailed: (state, action) => {

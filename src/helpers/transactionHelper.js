@@ -102,7 +102,7 @@ export const updateTransaction = async (
   accessToken,
   dispatch,
   axiosJWT,
-  service
+  entity
 ) => {
   // start update customer flag ...
   dispatch(updateTransactionStart());
@@ -110,8 +110,8 @@ export const updateTransaction = async (
   try {
     // update customer body ...
     const result = await axiosJWT.put(
-      `/${url.UPDATE_TRANSACTION}/${service?.id}`,
-      service,
+      `/${url.UPDATE_TRANSACTION}/${entity?.id}`,
+      entity,
       { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
     );
 

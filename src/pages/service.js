@@ -106,7 +106,7 @@ const Service = ({ match }) => {
       selectedList = Array.from(new Set(selectedItems));
       setSelectedItems(selectedList);
     }
-    document.activeElement.blur();
+    // document.activeElement.blur();
     return false;
   };
 
@@ -134,6 +134,7 @@ const Service = ({ match }) => {
 
   const onContextMenu = (e, data) => {
     const clickedProductId = data.data;
+    console.log(clickedProductId);
     if (!selectedItems.includes(clickedProductId)) {
       setSelectedItems([clickedProductId]);
     }

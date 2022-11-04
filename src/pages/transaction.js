@@ -2,14 +2,34 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import ListPageHeading from "../components/common/ListPageHeading";
+import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
+import * as dayjs from "dayjs";
+import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
+import {
+  TransactionTableDivided,
+  TransactionTableWithPaginationCard,
+} from "../components/common/table/TransactionTableCards";
 import TransactionPageListing from "../components/common/transaction/TransactionPageListing";
 import TransactionModal from "../containers/modals/TransactionModal";
 import { getServices } from "../helpers/serviceHelper";
 import { createAxios } from "../helpers/tokenHelper";
+import { getTransactions } from "../helpers/transactionHelper";
+import {
+  Badge,
+  Button,
+  ButtonDropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  UncontrolledDropdown,
+} from "reactstrap";
+import ContextMenuContainer from "../components/common/ContextMenuContainer";
+import { ContextMenuTrigger } from "react-contextmenu";
 
 const pageSizes = [4, 8, 12, 20];
 
 const Transaction = ({ match }) => {
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState("list");
@@ -50,6 +70,15 @@ const Transaction = ({ match }) => {
       );
     }
 
+    getTransactions(
+      currentUser?.accessToken,
+      dispatch,
+      axiosJWT,
+      currentPage,
+      selectedPageSize,
+      search
+    );
+
     setIsLoaded(true);
   }, []);
 
@@ -69,71 +98,14 @@ const Transaction = ({ match }) => {
     return -1;
   };
 
-  const onCheckItem = (event, id) => {
-    if (
-      event.target.tagName === "A" ||
-      (event.target.parentElement && event.target.parentElement.tagName === "A")
-    ) {
-      return true;
-    }
-    if (lastChecked === null) {
-      setLastChecked(id);
-    }
-
-    let selectedList = [...selectedItems];
-    if (selectedList.includes(id)) {
-      selectedList = selectedList.filter((x) => x !== id);
-    } else {
-      selectedList.push(id);
-    }
-    setSelectedItems(selectedList);
-
-    if (event.shiftKey) {
-      let newItems = [...items];
-      const start = getIndex(id, newItems, "id");
-      const end = getIndex(lastChecked, newItems, "id");
-      newItems = newItems.slice(Math.min(start, end), Math.max(start, end) + 1);
-      selectedItems.push(
-        ...newItems.map((item) => {
-          return item.id;
-        })
-      );
-      selectedList = Array.from(new Set(selectedItems));
-      setSelectedItems(selectedList);
-    }
-    document.activeElement.blur();
-    return false;
+  const onClickEdit = (data) => {
+    setIsEdit(true);
+    setTransaction(data);
+    setModalOpen(!modalOpen);
   };
 
-  const onContextMenuClick = (e, data) => {
-    switch (data.action) {
-      case "delete":
-        console.log("onContextMenuClick - action : ", data.action);
-        break;
-
-      default:
-        if (selectedItems.length > 1) {
-          console.log("Chỉ chọn 1 dòng khi cập nhật");
-          break;
-        }
-        const temp = transactionSelector.transactions.filter(
-          (g) => g.id === selectedItems[0]
-        );
-        setTransaction(temp);
-        console.log(temp);
-        setIsEdit(true);
-        setModalOpen(true);
-        break;
-    }
-  };
-
-  const onContextMenu = (e, data) => {
-    const clickedProductId = data.data;
-    if (!selectedItems.includes(clickedProductId)) {
-      setSelectedItems([clickedProductId]);
-    }
-
-    return true;
+  const onClickDelete = (id) => {
+    console.log(id);
   };
 
   return !isLoaded ? (
@@ -164,24 +136,77 @@ const Transaction = ({ match }) => {
         />
         <TransactionModal
           modalOpen={modalOpen}
-          toggleModal={() => setModalOpen(!modalOpen)}
+          // toggleModal={() => setModalOpen(!modalOpen)}
+          setModalOpen={setModalOpen}
           axiosJWT={axiosJWT}
           dispatch={dispatch}
           isEdit={isEdit}
           object={transaction}
           services={serviceSelector?.services}
         />
-        <TransactionPageListing
-          items={transactionSelector?.transactions}
-          displayMode={displayMode}
-          selectedItems={selectedItems}
-          onCheckItem={onCheckItem}
-          currentPage={currentPage}
-          totalPage={totalPage}
-          onContextMenuClick={onContextMenuClick}
-          onContextMenu={onContextMenu}
-          onChangePage={setCurrentPage}
-        />
+
+        {/* <TransactionTableDivided /> */}
+
+        <div className="table-rep-plugin">
+          <div
+            className="table-responsive mb-0"
+            data-pattern="priority-columns"
+          >
+            <Table
+              id="tech-companies-1"
+              className="table table-striped table-bordered"
+            >
+              <Thead>
+                <Tr>
+                  <Th data-priority="1">Khách hàng</Th>
+                  <Th data-priority="3">Tên dịch vụ</Th>
+                  <Th data-priority="3">Giá tiền</Th>
+                  <Th data-priority="3">Số lượng</Th>
+                  <Th data-priority="3">Số tiền giảm</Th>
+                  <Th data-priority="6">Số tiền mặt</Th>
+                  <Th data-priority="6">Số tiền nợ</Th>
+                  <Th data-priority="6">Ngày giao dịch</Th>
+                  <Th data-priority="6">Thưc hiện</Th>
+                  <Th data-priority="6">Thao tác</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {transactionSelector?.transactions?.map((element, index) => (
+                  <Tr key={index} onDoubleClick={() => onClickEdit(element)}>
+                    <Th>
+                      <span className="co-name text-left">
+                        {element.customerName}
+                      </span>
+                    </Th>
+                    <Td className="text-left">{element.serviceName}</Td>
+                    <Td className="text-right">
+                      {element.price?.toLocaleString()}
+                    </Td>
+                    <Td className="text-right">{element.quantity}</Td>
+                    <Td className="text-right">
+                      {element.discount?.toLocaleString()}
+                    </Td>
+                    <Td className="text-right">
+                      {element.cash?.toLocaleString()}
+                    </Td>
+                    <Td className="text-right">
+                      {element.debt?.toLocaleString()}
+                    </Td>
+                    <Td className="text-center">
+                      {dayjs(element.transactionDate).format("DD/MM/YYYY")}
+                    </Td>
+                    <Td className="text-right">{element.fullName}</Td>
+                    <Td className="text-center">
+                      <Button className="mb-2 btn btn-warning btn-xs">
+                        Delete
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </div>
+        </div>
       </div>
       <ToastContainer />
     </>
