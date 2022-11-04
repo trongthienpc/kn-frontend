@@ -1,16 +1,16 @@
 import React from "react";
 import { Row } from "reactstrap";
-import ContextMenuContainer from "./ContextMenuContainer";
-import ImageListView from "./ImageListView";
-import Pagination from "./Pagination";
-import ServiceGroupDataListView from "./ServiceGroupDataListView";
-import ThumbListView from "./ThumbListView";
+import ContextMenuContainer from "../ContextMenuContainer";
+import ImageListView from "../ImageListView";
+import Pagination from "../Pagination";
+import ThumbListView from "../ThumbListView";
+import TransactionDataListView from "./TransactionDataListView";
 
 function collect(props) {
   return { data: props.data };
 }
 
-const ServiceGroupPageListing = ({
+const TransactionPageListing = ({
   items,
   displayMode,
   selectedItems,
@@ -21,7 +21,7 @@ const ServiceGroupPageListing = ({
   onContextMenuClick,
   onContextMenu,
 }) => {
-  // console.log(items);
+  console.log(items);
   return (
     <Row>
       {items?.map((product) => {
@@ -48,7 +48,7 @@ const ServiceGroupPageListing = ({
           );
         }
         return (
-          <ServiceGroupDataListView
+          <TransactionDataListView
             key={product.id}
             product={product}
             isSelect={selectedItems.includes(product.id)}
@@ -70,4 +70,4 @@ const ServiceGroupPageListing = ({
   );
 };
 
-export default React.memo(ServiceGroupPageListing);
+export default React.memo(TransactionPageListing);

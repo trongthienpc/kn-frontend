@@ -36,7 +36,7 @@ const data = [
   },
   {
     id: "serviceGroups",
-    icon: "iconsminds-bucket",
+    icon: "iconsminds-bag-quantity",
     label: "Nhóm dịch vụ",
     to: `serviceGroups`,
   },
@@ -48,10 +48,10 @@ const data = [
   },
 
   {
-    id: "blankpage",
-    icon: "iconsminds-bucket",
-    label: "Blank-page",
-    to: `blank`,
+    id: "transactions",
+    icon: "iconsminds-testimonal",
+    label: "Giao dịch",
+    to: `transactions`,
   },
 ];
 export default data;

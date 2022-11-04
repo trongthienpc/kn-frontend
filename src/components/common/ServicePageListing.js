@@ -3,6 +3,7 @@ import { Row } from "reactstrap";
 import ContextMenuContainer from "./ContextMenuContainer";
 import ImageListView from "./ImageListView";
 import Pagination from "./Pagination";
+import ServiceDataListView from "./ServiceDataListView";
 import ServiceGroupDataListView from "./ServiceGroupDataListView";
 import ThumbListView from "./ThumbListView";
 
@@ -10,7 +11,7 @@ function collect(props) {
   return { data: props.data };
 }
 
-const ServiceGroupPageListing = ({
+const ServicePageListing = ({
   items,
   displayMode,
   selectedItems,
@@ -21,7 +22,7 @@ const ServiceGroupPageListing = ({
   onContextMenuClick,
   onContextMenu,
 }) => {
-  // console.log(items);
+  console.log(items);
   return (
     <Row>
       {items?.map((product) => {
@@ -48,7 +49,7 @@ const ServiceGroupPageListing = ({
           );
         }
         return (
-          <ServiceGroupDataListView
+          <ServiceDataListView
             key={product.id}
             product={product}
             isSelect={selectedItems.includes(product.id)}
@@ -70,4 +71,4 @@ const ServiceGroupPageListing = ({
   );
 };
 
-export default React.memo(ServiceGroupPageListing);
+export default React.memo(ServicePageListing);

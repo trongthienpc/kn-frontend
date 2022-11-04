@@ -10,6 +10,7 @@ import Login from "./pages/user/login";
 import UserLayout from "./layout/UserLayout";
 import { useSelector } from "react-redux";
 import ServiceGroup from "./pages/serviceGroup";
+import Transaction from "./pages/transaction";
 
 function RequireAuth({ children }) {
   let currentUser = useSelector((state) => state.auth?.currentUser);
@@ -44,6 +45,7 @@ function App() {
             <Route path="/services" element={<Service />} />
             <Route path="/serviceGroups" element={<ServiceGroup />} />
             <Route path="/blank" element={<Blank />} />
+            <Route path="/transactions" element={<Transaction />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>

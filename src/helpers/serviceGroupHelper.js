@@ -64,7 +64,8 @@ export const addServiceGroup = async (
       headers: { token: `Bearer ${accessToken}` },
       withCredentials: true,
     });
-    if (result?.data?.success) dispatch(addServiceGroupSuccess(group));
+    if (result?.data?.success)
+      dispatch(addServiceGroupSuccess(result?.data?.data));
     else
       dispatch(
         addServiceGroupFailed(result?.data?.message || "Thêm mới thất bại rồi!")
@@ -113,7 +114,7 @@ export const updateServiceGroup = async (
   try {
     // update customer body ...
     const result = await axiosJWT.put(
-      `${process.env.REACT_APP_BASE_URL}/${url.UPDATE_GROUP}/${group?.value}`,
+      `${process.env.REACT_APP_BASE_URL}/${url.UPDATE_GROUP}/${group?.id}`,
       group,
       { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
     );

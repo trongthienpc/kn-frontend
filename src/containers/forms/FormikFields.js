@@ -313,6 +313,7 @@ const FormikDatePicker = ({ name, value, className, onChange, onBlur }) => {
       selected={value}
       onChange={handleChange}
       onBlur={handleBlur}
+      dateFormat={"dd/MM/yyyy"}
     />
   );
 };

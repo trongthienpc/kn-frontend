@@ -1,17 +1,15 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import ListPageHeading from "../components/common/ListPageHeading";
-import ListPageListing from "../components/common/ListPageListing";
-import ServiceGroupPageListing from "../components/common/ServiceGroupPageListing";
-import { servicePath } from "../constants/defaultValues";
-import ServiceGroupModal from "../containers/modals/ServiceGroupModal";
-import { getServiceGroups } from "../helpers/serviceGroupHelper";
+import TransactionPageListing from "../components/common/transaction/TransactionPageListing";
+import TransactionModal from "../containers/modals/TransactionModal";
+import { getServices } from "../helpers/serviceHelper";
 import { createAxios } from "../helpers/tokenHelper";
 
 const pageSizes = [4, 8, 12, 20];
-const ServiceGroup = ({ match }) => {
+
+const Transaction = ({ match }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState("list");
@@ -25,8 +23,7 @@ const ServiceGroup = ({ match }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [items, setItems] = useState([]);
   const [lastChecked, setLastChecked] = useState(null);
-  const [group, setGroup] = useState({});
-
+  const [transaction, setTransaction] = useState({});
   const startIndex = (currentPage - 1) * selectedPageSize;
   const endIndex = currentPage * selectedPageSize;
 
@@ -35,48 +32,27 @@ const ServiceGroup = ({ match }) => {
   // }, [selectedPageSize]);
 
   const dispatch = useDispatch();
+
   const currentUser = useSelector((state) => state.auth?.currentUser);
-
-  const groupSelector = useSelector((state) => state.serviceGroup);
-  // console.log(groupSelector);
-
+  const serviceSelector = useSelector((state) => state.service);
+  const transactionSelector = useSelector((state) => state.transaction);
   const axiosJWT = createAxios(currentUser, dispatch);
-  // console.log("object");
 
   useEffect(() => {
-    getServiceGroups(
-      currentUser?.accessToken,
-      dispatch,
-      axiosJWT,
-      currentPage,
-      selectedPageSize,
-      search
-    );
+    if (serviceSelector.services.length <= 0) {
+      getServices(
+        currentUser?.accessToken,
+        dispatch,
+        axiosJWT,
+        currentPage,
+        selectedPageSize,
+        search
+      );
+    }
+
     setIsLoaded(true);
   }, []);
 
-  //   useEffect(() => {
-  //   async function fetchData() {
-  //     axios
-  //       .get(
-  //         `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${selectedOrderOption.column}&search=${search}`
-  //       )
-  //       .then((res) => {
-  //         return res.data;
-  //       })
-  //       .then((data) => {
-  //         setTotalPage(data.totalPage);
-  //         setItems(
-  //           data.data.map((x) => {
-  //             return { ...x, img: x.img.replace("img/", "img/products/") };
-  //           })
-  //         );
-  //         setSelectedItems([]);
-  //         setTotalItemCount(data.totalItem);
-  //         setIsLoaded(true);
-  //       });
-  //   }
-  //   fetchData();
   // setTotalPage(groupSelector?.totalPages);
   // setItems(groupSelector?.groups);
   // setSelectedItems([]);
@@ -140,10 +116,11 @@ const ServiceGroup = ({ match }) => {
           console.log("Chỉ chọn 1 dòng khi cập nhật");
           break;
         }
-        const temp = groupSelector.groups.filter(
+        const temp = transactionSelector.transactions.filter(
           (g) => g.id === selectedItems[0]
         );
-        setGroup(temp);
+        setTransaction(temp);
+        console.log(temp);
         setIsEdit(true);
         setModalOpen(true);
         break;
@@ -165,7 +142,7 @@ const ServiceGroup = ({ match }) => {
     <>
       <div className="disable-text-selection">
         <ListPageHeading
-          heading="Nhóm dịch vụ"
+          heading="Danh sách giao dịch"
           displayMode={displayMode}
           changeDisplayMode={setDisplayMode}
           changePageSize={setSelectedPageSize}
@@ -185,17 +162,17 @@ const ServiceGroup = ({ match }) => {
           pageSizes={pageSizes}
           toggleModal={() => setModalOpen(!modalOpen)}
         />
-        <ServiceGroupModal
+        <TransactionModal
           modalOpen={modalOpen}
           toggleModal={() => setModalOpen(!modalOpen)}
           axiosJWT={axiosJWT}
           dispatch={dispatch}
           isEdit={isEdit}
-          object={group}
-          // categories={categories}
+          object={transaction}
+          services={serviceSelector?.services}
         />
-        <ServiceGroupPageListing
-          items={groupSelector?.groups}
+        <TransactionPageListing
+          items={transactionSelector?.transactions}
           displayMode={displayMode}
           selectedItems={selectedItems}
           onCheckItem={onCheckItem}
@@ -211,4 +188,4 @@ const ServiceGroup = ({ match }) => {
   );
 };
 
-export default ServiceGroup;
+export default Transaction;

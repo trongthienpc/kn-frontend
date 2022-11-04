@@ -26,6 +26,18 @@ export const ADD_GROUP = "service-group";
 export const DEL_GROUP = "service-group";
 export const UPDATE_GROUP = "service-group";
 
+// SERVICE
+export const GET_SERVICE = "service";
+export const ADD_SERVICE = "service";
+export const DEL_SERVICE = "service";
+export const UPDATE_SERVICE = "service";
+
+// SERVICE
+export const GET_TRANSACTION = "transaction";
+export const ADD_TRANSACTION = "transaction";
+export const DEL_TRANSACTION = "transaction";
+export const UPDATE_TRANSACTION = "transaction";
+
 // function
 export const FUNCTIONS = "function";
 export const GET_FUNCTIONS_BY_DATE = "function/getByDate";

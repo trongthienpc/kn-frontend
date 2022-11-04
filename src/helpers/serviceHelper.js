@@ -1,6 +1,4 @@
 import * as url from "../constants/url-helper";
-// @desc get all services
-
 import {
   addServiceFailed,
   addServiceStart,
@@ -14,7 +12,8 @@ import {
   updateServiceFailed,
   updateServiceStart,
   updateServiceSuccess,
-} from "../store/reducers/serviceGroupSlice";
+} from "../store/reducers/serviceSlice";
+// @desc get all services
 
 // @router baseURL/customer
 export const getServices = async (
@@ -31,7 +30,7 @@ export const getServices = async (
   // action ...
   try {
     const results = await axiosJWT.get(
-      `${process.env.REACT_APP_BASE_URL}/${url.GET_GROUP}?page=${page}&pageSize=${pageSize}&search=${search}`,
+      `/${url.GET_SERVICE}?page=${page}&pageSize=${pageSize}&search=${search}`,
       { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
     );
 
@@ -51,12 +50,12 @@ export const addService = async (accessToken, dispatch, axiosJWT, service) => {
 
   // action body ....
   try {
-    const results = await axiosJWT.post(
-      `${process.env.REACT_APP_BASE_URL}/${url.ADD_GROUP}`,
-      service,
-      { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
-    );
-    if (results?.success) dispatch(addServiceSuccess(service));
+    const result = await axiosJWT.post(`/${url.ADD_SERVICE}`, service, {
+      headers: { token: `Bearer ${accessToken}` },
+      withCredentials: true,
+    });
+    console.log(result);
+    if (result?.data?.success) dispatch(addServiceSuccess(result?.data?.data));
   } catch (err) {
     dispatch(addServiceFailed(err?.response?.data?.message));
   }
@@ -76,10 +75,10 @@ export const deleteService = async (
 
   // action body ....
   try {
-    const results = await axiosJWT.delete(
-      `${process.env.REACT_APP_BASE_URL}/${url.DEL_GROUP}/${serviceId}`,
-      { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
-    );
+    const results = await axiosJWT.delete(`/${url.DEL_SERVICE}/${serviceId}`, {
+      headers: { token: `Bearer ${accessToken}` },
+      withCredentials: true,
+    });
     if (results.success) dispatch(deleteServiceSuccess(serviceId));
   } catch (err) {
     dispatch(deleteServiceFailed(err?.message));
@@ -101,12 +100,12 @@ export const updateService = async (
   try {
     // update customer body ...
     const result = await axiosJWT.put(
-      `${process.env.REACT_APP_BASE_URL}/${url.UPDATE_GROUP}/${service?.id}`,
+      `/${url.UPDATE_SERVICE}/${service?.id}`,
       service,
       { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
     );
 
-    dispatch(updateServiceSuccess(service));
+    dispatch(updateServiceSuccess(result?.data?.data));
   } catch (errors) {
     dispatch(updateServiceFailed(errors?.response?.data?.message));
   }

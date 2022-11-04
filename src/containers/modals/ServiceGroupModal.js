@@ -1,5 +1,5 @@
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import React, { useRef, useState } from "react";
+import { Formik, Field, Form } from "formik";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import {
@@ -11,7 +11,10 @@ import {
   ModalHeader,
 } from "reactstrap";
 import * as Yup from "yup";
-import { addServiceGroup } from "../../helpers/serviceGroupHelper";
+import {
+  addServiceGroup,
+  updateServiceGroup,
+} from "../../helpers/serviceGroupHelper";
 import { FormikCustomRadioGroup } from "../forms/FormikFields";
 
 const ServiceGroupModal = ({
@@ -23,17 +26,26 @@ const ServiceGroupModal = ({
 }) => {
   console.log(object);
 
-  const [group, setGroup] = useState(object);
+  const [group, setGroup] = useState({});
+  useEffect(() => {
+    setGroup(object[0]);
+  }, [object]);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth?.currentUser);
-  const onUpdateService = (updateService) => {
-    console.log(updateService);
+
+  const onUpdateServiceGroup = async (g) => {
+    await updateServiceGroup(currentUser?.accessToken, dispatch, axiosJWT, g);
+    toggleModal();
   };
 
-  const onAddService = async (group) => {
+  const onAddServiceGroup = async (group) => {
     await addServiceGroup(currentUser?.accessToken, dispatch, axiosJWT, group);
   };
 
+  const onCancelClick = () => {
+    // setGroup({});
+    toggleModal();
+  };
   const options = [
     { value: true, label: "Kích hoạt" },
     { value: false, label: "Tạm dừng" },
@@ -54,8 +66,8 @@ const ServiceGroupModal = ({
           <Formik
             enableReinitialize={true}
             initialValues={{
-              label: "",
-              status: true,
+              label: isEdit ? group?.label : "",
+              status: isEdit ? group?.status : true,
             }}
             validationSchema={Yup.object().shape({
               label: Yup.string().required("Vui lòng nhập tên nhóm dịch vụ"),
@@ -63,22 +75,20 @@ const ServiceGroupModal = ({
             onSubmit={(values) => {
               if (isEdit) {
                 const updateGroup = {
-                  id: group.id,
+                  id: object[0]?.id,
                   label: values.label,
                   status: values.status,
                 };
 
-                onUpdateService(updateGroup);
+                onUpdateServiceGroup(updateGroup);
               } else {
                 const newGroup = {
                   label: values["label"],
+                  status: values["status"],
                 };
 
-                onAddService(newGroup);
+                onAddServiceGroup(newGroup);
               }
-
-              setGroup(null);
-              // toggleModal();
             }}
           >
             {({
@@ -99,7 +109,7 @@ const ServiceGroupModal = ({
                     className="form-control"
                     name="label"
                     id="label"
-                    value={object?.label}
+                    value={values?.label || ""}
                   />
                   {errors.label && touched.label && (
                     <div className="invalid-feedback d-block">
@@ -126,7 +136,11 @@ const ServiceGroupModal = ({
                   ) : null}
                 </FormGroup>
                 <div className="d-flex justify-content-between mt-5">
-                  <Button color="secondary" type="submit">
+                  <Button
+                    color="secondary"
+                    type="submit"
+                    onClick={onCancelClick}
+                  >
                     Hủy
                   </Button>
                   <Button color="primary" type="submit">

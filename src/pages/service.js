@@ -1,46 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 import ListPageHeading from "../components/common/ListPageHeading";
 import ListPageListing from "../components/common/ListPageListing";
-import AddNewServiceModal from "../containers/modals/AddNewServiceModal";
-import axios from "axios";
-import { servicePath } from "../constants/defaultValues";
-import { Label } from "reactstrap";
+import ServiceGroupPageListing from "../components/common/ServiceGroupPageListing";
+import ServicePageListing from "../components/common/ServicePageListing";
+import ServiceGroupModal from "../containers/modals/ServiceGroupModal";
 import ServiceModal from "../containers/modals/ServiceModal";
-
-const orderOptions = [
-  { column: "title", label: "Product Name" },
-  { column: "category", label: "Category" },
-  { column: "status", label: "Status" },
-];
+import { getServices } from "../helpers/serviceHelper";
+import { createAxios } from "../helpers/tokenHelper";
 
 const pageSizes = [4, 8, 12, 20];
-
-const categories = [
-  { label: "Cakes", value: "Cakes", key: 0 },
-  { label: "Cupcakes", value: "Cupcakes", key: 1 },
-  { label: "Desserts", value: "Desserts", key: 2 },
-];
-
-const getIndex = (value, arr, prop) => {
-  for (let i = 0; i < arr.length; i += 1) {
-    if (arr[i][prop] === value) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-const apiUrl = `${servicePath}/cakes/paging`;
-
 const Service = ({ match }) => {
+  const [isEdit, setIsEdit] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPageSize, setSelectedPageSize] = useState(8);
-  const [selectedOrderOption, setSelectedOrderOption] = useState({
-    column: "title",
-    label: "Product Name",
-  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [totalItemCount, setTotalItemCount] = useState(0);
   const [totalPage, setTotalPage] = useState(1);
@@ -48,49 +25,54 @@ const Service = ({ match }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [items, setItems] = useState([]);
   const [lastChecked, setLastChecked] = useState(null);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedPageSize, selectedOrderOption]);
-
-  useEffect(() => {
-    async function fetchData() {
-      axios
-        .get(
-          `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${selectedOrderOption.column}&search=${search}`
-        )
-        .then((res) => {
-          return res.data;
-        })
-        .then((data) => {
-          setTotalPage(data.totalPage);
-          setItems(
-            data.data.map((x) => {
-              return { ...x, img: x.img.replace("img/", "img/products/") };
-            })
-          );
-          setSelectedItems([]);
-          setTotalItemCount(data.totalItem);
-          setIsLoaded(true);
-        });
-    }
-    fetchData();
-  }, [selectedPageSize, currentPage, selectedOrderOption, search]);
-
-  const handleChangeSelectAll = (isToggle) => {
-    if (selectedItems.length >= items.length) {
-      if (isToggle) {
-        setSelectedItems([]);
-      }
-    } else {
-      setSelectedItems(items.map((x) => x.id));
-    }
-    document.activeElement.blur();
-    return false;
-  };
-
+  const [service, setService] = useState({});
+  const [groups, setGroups] = useState([]);
   const startIndex = (currentPage - 1) * selectedPageSize;
   const endIndex = currentPage * selectedPageSize;
+
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [selectedPageSize]);
+
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth?.currentUser);
+
+  const serviceSelector = useSelector((state) => state.service);
+  const groupSelector = useSelector((state) => state.serviceGroup);
+
+  // console.log(groupSelector);
+
+  const axiosJWT = createAxios(currentUser, dispatch);
+  // console.log("object");
+
+  useEffect(() => {
+    getServices(
+      currentUser?.accessToken,
+      dispatch,
+      axiosJWT,
+      currentPage,
+      selectedPageSize,
+      search
+    );
+    setIsLoaded(true);
+    setGroups(groupSelector.groups);
+  }, []);
+
+  // setTotalPage(groupSelector?.totalPages);
+  // setItems(groupSelector?.groups);
+  // setSelectedItems([]);
+  // setTotalItemCount(groupSelector?.totalGroups);
+  // setIsLoaded(true);
+  //   }, [selectedPageSize, currentPage]);
+
+  const getIndex = (value, arr, prop) => {
+    for (let i = 0; i < arr.length; i += 1) {
+      if (arr[i][prop] === value) {
+        return i;
+      }
+    }
+    return -1;
+  };
 
   const onCheckItem = (event, id) => {
     if (
@@ -129,8 +111,25 @@ const Service = ({ match }) => {
   };
 
   const onContextMenuClick = (e, data) => {
-    console.log("onContextMenuClick - selected items", selectedItems);
-    console.log("onContextMenuClick - action : ", data.action);
+    switch (data.action) {
+      case "delete":
+        console.log("onContextMenuClick - action : ", data.action);
+        break;
+
+      default:
+        if (selectedItems.length > 1) {
+          console.log("Chỉ chọn 1 dòng khi cập nhật");
+          break;
+        }
+        const temp = serviceSelector.services.filter(
+          (g) => g.id === selectedItems[0]
+        );
+        setService(temp);
+        console.log(temp);
+        setIsEdit(true);
+        setModalOpen(true);
+        break;
+    }
   };
 
   const onContextMenu = (e, data) => {
@@ -148,19 +147,12 @@ const Service = ({ match }) => {
     <>
       <div className="disable-text-selection">
         <ListPageHeading
-          heading="menu.data-list"
+          heading="Danh sách dịch vụ"
           displayMode={displayMode}
           changeDisplayMode={setDisplayMode}
-          handleChangeSelectAll={handleChangeSelectAll}
-          changeOrderBy={(column) => {
-            setSelectedOrderOption(
-              orderOptions.find((x) => x.column === column)
-            );
-          }}
           changePageSize={setSelectedPageSize}
           selectedPageSize={selectedPageSize}
           totalItemCount={totalItemCount}
-          selectedOrderOption={selectedOrderOption}
           match={match}
           startIndex={startIndex}
           endIndex={endIndex}
@@ -171,17 +163,21 @@ const Service = ({ match }) => {
               setSearch(e.target.value.toLowerCase());
             }
           }}
-          orderOptions={orderOptions}
+          setIsEdit={setIsEdit}
           pageSizes={pageSizes}
           toggleModal={() => setModalOpen(!modalOpen)}
         />
         <ServiceModal
           modalOpen={modalOpen}
           toggleModal={() => setModalOpen(!modalOpen)}
-          // categories={categories}
+          axiosJWT={axiosJWT}
+          dispatch={dispatch}
+          isEdit={isEdit}
+          object={service}
+          groups={groups}
         />
-        <ListPageListing
-          items={items}
+        <ServicePageListing
+          items={serviceSelector?.services}
           displayMode={displayMode}
           selectedItems={selectedItems}
           onCheckItem={onCheckItem}
@@ -192,6 +188,7 @@ const Service = ({ match }) => {
           onChangePage={setCurrentPage}
         />
       </div>
+      <ToastContainer />
     </>
   );
 };

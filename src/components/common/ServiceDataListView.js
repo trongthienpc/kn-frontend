@@ -1,16 +1,11 @@
 import React from "react";
-import { Card, CustomInput, Badge } from "reactstrap";
+import { Card, CustomInput, Badge, Label } from "reactstrap";
 import { NavLink } from "react-router-dom";
 import classnames from "classnames";
 import { ContextMenuTrigger } from "react-contextmenu";
 import { Colxx } from "./CustomBootstrap";
 
-const ServiceGroupDataListView = ({
-  product,
-  isSelect,
-  collect,
-  onCheckItem,
-}) => {
+const ServiceDataListView = ({ product, isSelect, collect, onCheckItem }) => {
   // console.log(product);
 
   return (
@@ -26,9 +21,19 @@ const ServiceGroupDataListView = ({
             <div className="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
               <NavLink to={`?p=${product.id}`} className="w-40 w-sm-100">
                 <p className="list-item-heading mb-1 truncate">
-                  {product.label}
+                  {product.serviceName}
                 </p>
               </NavLink>
+              <NavLink to={`?p=${product.id}`} className="w-40 w-sm-100">
+                <p className="list-item-heading mb-1 truncate">
+                  {product.serviceGroupName}
+                </p>
+              </NavLink>
+              <Label to={`?p=${product.id}`} className="w-40 w-sm-100">
+                <p className="list-item-heading mb-1 truncate">
+                  {product.price}
+                </p>
+              </Label>
               <div className="w-15 w-sm-100">
                 <Badge color={product.status ? "primary" : "secondary"} pill>
                   {product.status ? "Kích hoạt" : " Tạm dừng"}
@@ -53,4 +58,4 @@ const ServiceGroupDataListView = ({
 };
 
 /* React.memo detail : https://reactjs.org/docs/react-api.html#reactpurecomponent  */
-export default React.memo(ServiceGroupDataListView);
+export default React.memo(ServiceDataListView);

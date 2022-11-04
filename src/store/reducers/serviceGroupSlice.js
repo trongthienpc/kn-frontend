@@ -94,7 +94,7 @@ const serviceGroupSlice = createSlice({
       state.message = "Updated the Service Group successfully";
       state.groups = [
         action.payload,
-        ...state.groups.filter((x) => x.value !== action.payload.value),
+        ...state.groups.filter((x) => x.id !== action.payload.id),
       ];
     },
     updateServiceGroupFailed: (state, action) => {

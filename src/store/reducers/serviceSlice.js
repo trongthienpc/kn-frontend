@@ -83,7 +83,7 @@ const serviceSlice = createSlice({
       state.message = "Updated the service successfully";
       state.services = [
         action.payload,
-        ...state.services.filter((x) => x.value !== action.payload.value),
+        ...state.services.filter((x) => x.id !== action.payload.id),
       ];
     },
     updateServiceFailed: (state, action) => {

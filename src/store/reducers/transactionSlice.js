@@ -14,17 +14,17 @@ const transactionSlice = createSlice({
     totalTransactions: 0,
   },
   reducers: {
-    getServiceStart: (state, action) => {
+    getTransactionStart: (state, action) => {
       state.loading = true;
       state.message = "Get transaction started...";
     },
-    getServiceSuccess: (state, action) => {
+    getTransactionSuccess: (state, action) => {
       state.loading = false;
       state.message = action.payload.message;
       state.success = action.payload.success;
       state.transaction = action.payload.data;
     },
-    getServiceFailed: (state, action) => {
+    getTransactionFailed: (state, action) => {
       state.loading = false;
       state.success = false;
       state.transaction = {};
@@ -55,28 +55,28 @@ const transactionSlice = createSlice({
         transactions: [],
       };
     },
-    addServiceStart: (state, action) => {
+    addTransactionStart: (state, action) => {
       state.loading = true;
       state.message = "Add new transaction started...";
     },
-    addServiceSuccess: (state, action) => {
+    addTransactionSuccess: (state, action) => {
       toast.success("Thêm mới thành công");
       state.loading = false;
       state.success = true;
       state.message = "Add new transaction successfully";
       state.transactions = [action.payload, ...state.transactions];
     },
-    addServiceFailed: (state, action) => {
+    addTransactionFailed: (state, action) => {
       toast.error(action.payload);
       state.loading = false;
       state.message = action.payload;
       state.success = false;
     },
-    updateServiceStart: (state, action) => {
+    updateTransactionStart: (state, action) => {
       state.loading = true;
       state.message = "Update the transaction started...";
     },
-    updateServiceSuccess: (state, action) => {
+    updateTransactionSuccess: (state, action) => {
       toast.success("Cập nhât dữ liệu thành công");
       state.loading = false;
       state.success = true;
@@ -86,17 +86,17 @@ const transactionSlice = createSlice({
         ...state.transactions.filter((x) => x.value !== action.payload.value),
       ];
     },
-    updateServiceFailed: (state, action) => {
+    updateTransactionFailed: (state, action) => {
       toast.error(action.payload);
       state.loading = false;
       state.message = action.payload;
       state.success = false;
     },
-    deleteServiceStart: (state, action) => {
+    deleteTransactionStart: (state, action) => {
       state.loading = true;
       state.message = "Delete the transaction started...";
     },
-    deleteServiceSuccess: (state, action) => {
+    deleteTransactionSuccess: (state, action) => {
       toast.success("Xóa dữ liệu thành công");
       state.loading = false;
       state.success = true;
@@ -105,7 +105,7 @@ const transactionSlice = createSlice({
         (x) => x.value !== action.payload
       );
     },
-    deleteServiceFailed: (state, action) => {
+    deleteTransactionFailed: (state, action) => {
       state.loading = false;
       state.message = action.message;
       state.success = false;
@@ -114,20 +114,20 @@ const transactionSlice = createSlice({
 });
 
 export const {
-  addServiceFailed,
-  addServiceStart,
-  addServiceSuccess,
-  deleteServiceFailed,
-  deleteServiceStart,
-  deleteServiceSuccess,
-  getServiceFailed,
-  getServiceStart,
-  getServiceSuccess,
+  addTransactionFailed,
+  addTransactionStart,
+  addTransactionSuccess,
+  deleteTransactionFailed,
+  deleteTransactionStart,
+  deleteTransactionSuccess,
+  getTransactionFailed,
+  getTransactionStart,
+  getTransactionSuccess,
   getTransactionsFailed,
   getTransactionsStart,
   getTransactionsSuccess,
-  updateServiceFailed,
-  updateServiceStart,
-  updateServiceSuccess,
+  updateTransactionFailed,
+  updateTransactionStart,
+  updateTransactionSuccess,
 } = transactionSlice.actions;
 export default transactionSlice.reducer;

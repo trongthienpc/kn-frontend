@@ -1,5 +1,6 @@
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -11,6 +12,7 @@ import {
   Row,
 } from "reactstrap";
 import * as Yup from "yup";
+import { addService, updateService } from "../../helpers/serviceHelper";
 import AvailityBasic from "../forms/AvailityBasic";
 import {
   FormikCustomRadioGroup,
@@ -18,25 +20,57 @@ import {
   FormikReactSelect,
 } from "../forms/FormikFields";
 
-const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
-  const [service, setService] = useState(serviceObject);
-  const onUpdateService = (updateService) => {
-    console.log(updateService);
+const ServiceModal = ({
+  modalOpen,
+  toggleModal,
+  axiosJWT,
+  dispatch,
+  isEdit,
+  object,
+  groups,
+}) => {
+  const [service, setService] = useState(object);
+  // const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth?.currentUser);
+  const onUpdateService = async (g) => {
+    const group = {
+      id: g.id,
+      serviceName: g.serviceName,
+      price: g.price,
+      status: g.status,
+      serviceGroupId: g.serviceGroup?.id,
+      serviceGroupName: g.serviceGroup?.label,
+    };
+    await updateService(currentUser?.accessToken, dispatch, axiosJWT, group);
+
+    console.log(g);
+    toggleModal();
   };
-  const onAddService = (addService) => {
-    console.log(addService);
+
+  const onAddService = async (g) => {
+    const group = {
+      serviceName: g.serviceName,
+      price: g.price,
+      status: g.status,
+      serviceGroupId: g.serviceGroup?.id,
+      serviceGroupName: g.serviceGroup?.label,
+    };
+    console.log(group);
+    await addService(currentUser?.accessToken, dispatch, axiosJWT, group);
+  };
+
+  const onCancelClick = () => {
+    toggleModal(false);
   };
 
   const options = [
     { value: true, label: "Kích hoạt" },
     { value: false, label: "Tạm dừng" },
   ];
+  useEffect(() => {
+    setService(object[0]);
+  }, [object]);
 
-  const serviceGroup = [
-    { value: "1", label: "Nhóm 1" },
-    { value: "2", label: "Nhóm 2" },
-    { value: "3", label: "Nhóm 3" },
-  ];
   return (
     <Modal
       isOpen={modalOpen}
@@ -51,15 +85,26 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
         <Formik
           enableReinitialize={true}
           initialValues={{
-            serviceName: "",
-            serviceGroup: [{ value: "1", label: "Nhóm 1" }],
-            status: false,
+            serviceName: !!isEdit ? service?.serviceName : "",
+            serviceGroup: !!isEdit
+              ? {
+                  value: service?.serviceGroupId,
+                  label: service?.serviceGroupName,
+                }
+              : groups[0],
+            price: !!isEdit ? service?.price : 0,
+            status: !!isEdit ? service?.status : true,
           }}
           validationSchema={Yup.object().shape({
             serviceName: Yup.string().required("Vui lòng nhập tên dịch vụ"),
+            serviceGroup: Yup.object().required(
+              "Vui lòng nhập chọn nhóm dịch vụ"
+            ),
           })}
           onSubmit={(values) => {
             if (isEdit) {
+              console.log(values);
+
               const updateService = {
                 id: service.id,
                 serviceName: values.serviceName,
@@ -72,13 +117,15 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
               const newService = {
                 serviceName: values["serviceName"],
                 serviceGroup: values["serviceGroup"],
+                price: values["price"],
+                status: values["status"],
               };
 
               onAddService(newService);
             }
 
-            setService(null);
-            toggleModal();
+            // setService(null);
+            // toggleModal();
           }}
         >
           {({
@@ -93,7 +140,7 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
             isSubmitting,
           }) => (
             <Form className="av-tooltip tooltip-label-right">
-              <FormGroup className="error-l-100">
+              {/* <FormGroup className="error-l-100">
                 <Label>Select </Label>
                 <select
                   name="select"
@@ -102,7 +149,7 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                 >
-                  {serviceGroup?.map((g, index) => (
+                  {groups?.map((g, index) => (
                     <option value={g.value} key={index}>
                       {g.label}
                     </option>
@@ -114,13 +161,14 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
                     {errors.select}
                   </div>
                 ) : null}
-              </FormGroup>
+              </FormGroup> */}
               <FormGroup className="error-l-100">
                 <Label>Tên dịch vụ</Label>
                 <Field
                   className="form-control"
                   name="serviceName"
                   id="serviceName"
+                  value={values.serviceName || ""}
                 />
                 {errors.serviceName && touched.serviceName && (
                   <div className="invalid-feedback d-block">
@@ -129,12 +177,25 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
                 )}
               </FormGroup>
               <FormGroup className="error-l-100">
+                <Label>Giá dịch vụ</Label>
+                <Field
+                  className="form-control"
+                  name="price"
+                  id="price"
+                  type="number"
+                  value={values?.price || 0}
+                />
+                {errors.price && touched.price && (
+                  <div className="invalid-feedback d-block">{errors.price}</div>
+                )}
+              </FormGroup>
+              <FormGroup className="error-l-100">
                 <Label>Nhóm dịch vụ </Label>
                 <FormikReactSelect
                   name="serviceGroup"
                   id="serviceGroup"
-                  value={values.serviceGroup}
-                  options={serviceGroup}
+                  value={values.serviceGroup || null}
+                  options={groups}
                   onChange={setFieldValue}
                   onBlur={setFieldTouched}
                 />
@@ -163,7 +224,7 @@ const ServiceModal = ({ modalOpen, toggleModal, isEdit, serviceObject }) => {
                 ) : null}
               </FormGroup>
               <div className="d-flex justify-content-between mt-5">
-                <Button color="secondary" type="submit">
+                <Button color="secondary" type="submit" onClick={onCancelClick}>
                   Hủy
                 </Button>
                 <Button color="primary" type="submit">

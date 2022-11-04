@@ -37,9 +37,9 @@ const ListPageHeading = ({
               color="primary"
               size="lg"
               className="top-right-button"
-              onClick={() => toggleModal()}
+              onClick={() => handleAddButton()}
             >
-              Add New
+              Thêm mới
             </Button>
           </div>
         </div>

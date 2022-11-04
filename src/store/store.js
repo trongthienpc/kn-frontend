@@ -14,6 +14,7 @@ import authSlice from "./reducers/authSlice";
 import menuSlice from "./reducers/menuSlice";
 import serviceGroupSlice from "./reducers/serviceGroupSlice";
 import serviceSlice from "./reducers/serviceSlice";
+import transactionSlice from "./reducers/transactionSlice";
 
 const persistConfig = {
   key: "root",
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   auth: authSlice,
   serviceGroup: serviceGroupSlice,
   service: serviceSlice,
+  transaction: transactionSlice,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
