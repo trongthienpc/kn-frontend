@@ -32,11 +32,23 @@ export const ADD_SERVICE = "service";
 export const DEL_SERVICE = "service";
 export const UPDATE_SERVICE = "service";
 
-// SERVICE
+// TRANSACTION
 export const GET_TRANSACTION = "transaction";
 export const ADD_TRANSACTION = "transaction";
 export const DEL_TRANSACTION = "transaction";
 export const UPDATE_TRANSACTION = "transaction";
+
+// KPI
+export const GET_KPI = "kpi";
+export const ADD_KPI = "kpi";
+export const DEL_KPI = "kpi";
+export const UPDATE_KPI = "kpi";
+
+// USER
+export const GET_USER = "user";
+export const DEL_USER = "user";
+export const ADD_USER = "user";
+export const UPDATE_USER = "user";
 
 // function
 export const FUNCTIONS = "function";

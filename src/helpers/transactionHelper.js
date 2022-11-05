@@ -6,6 +6,9 @@ import {
   deleteTransactionFailed,
   deleteTransactionStart,
   deleteTransactionSuccess,
+  getStatisticsFailed,
+  getStatisticsStart,
+  getStatisticsSuccess,
   getTransactionsFailed,
   getTransactionsStart,
   getTransactionsSuccess,
@@ -14,9 +17,33 @@ import {
   updateTransactionSuccess,
 } from "../store/reducers/transactionSlice";
 
-// @desc get all services
+// @router baseURL/transaction
+export const getStatistics = async (
+  accessToken,
+  dispatch,
+  axiosJWT,
+  month,
+  year
+) => {
+  // start action get customers flag
+  dispatch(getStatisticsStart());
 
-// @router baseURL/customer
+  // action ...
+  try {
+    const results = await axiosJWT.get(
+      `/${url.GET_TRANSACTION}/statistics?month=${month}&year=${year}`,
+      { headers: { token: `Bearer ${accessToken}` }, withCredentials: true }
+    );
+
+    // action success
+    dispatch(getStatisticsSuccess(results.data));
+  } catch (errors) {
+    // action failed
+    dispatch(getStatisticsFailed(errors));
+  }
+};
+
+// @router baseURL/transaction
 export const getTransactions = async (
   accessToken,
   dispatch,
@@ -43,8 +70,8 @@ export const getTransactions = async (
   }
 };
 
-// @desc post service
-// @route baseURL/service
+// @desc post transaction
+// @route baseURL/transaction
 export const addTransaction = async (
   accessToken,
   dispatch,
@@ -68,14 +95,14 @@ export const addTransaction = async (
   }
 };
 
-// @desc delete service
-// @route baseURL/service/:id
-// @param {string} service id
+// @desc delete transaction
+// @route baseURL/transaction/:id
+// @param {string} transaction id
 export const deleteTransaction = async (
   accessToken,
   dispatch,
   axiosJWT,
-  serviceId
+  transactionId
 ) => {
   // start delete customer flag ...
   dispatch(deleteTransactionStart());
@@ -83,21 +110,21 @@ export const deleteTransaction = async (
   // action body ....
   try {
     const results = await axiosJWT.delete(
-      `/${url.DEL_TRANSACTION}/${serviceId}`,
+      `/${url.DEL_TRANSACTION}/${transactionId}`,
       {
         headers: { token: `Bearer ${accessToken}` },
         withCredentials: true,
       }
     );
-    if (results.success) dispatch(deleteTransactionSuccess(serviceId));
+    if (results.success) dispatch(deleteTransactionSuccess(transactionId));
   } catch (err) {
     dispatch(deleteTransactionFailed(err?.message));
   }
 };
 
-// @desc update service
-// @route baseURL/service/:id
-// @param {string} service id
+// @desc update transaction
+// @route baseURL/transaction/:id
+// @param {string} transaction id
 export const updateTransaction = async (
   accessToken,
   dispatch,

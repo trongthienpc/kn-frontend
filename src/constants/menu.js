@@ -1,4 +1,4 @@
-import { adminRoot } from "./defaultValues";
+import { adminRoot, UserRole } from "./defaultValues";
 
 const data = [
   {
@@ -6,7 +6,7 @@ const data = [
     icon: "iconsminds-shop-4",
     label: "Dashboards",
     to: `home`,
-    // roles: [UserRole.Admin, UserRole.Editor],
+    roles: 1,
     // subs: [
     //   {
     //     icon: "simple-icon-briefcase",
@@ -52,6 +52,12 @@ const data = [
     icon: "iconsminds-testimonal",
     label: "Giao dịch",
     to: `transactions`,
+  },
+  {
+    id: "kpis",
+    icon: "simple-icon-target",
+    label: "KPIs",
+    to: `kpis`,
   },
 ];
 export default data;

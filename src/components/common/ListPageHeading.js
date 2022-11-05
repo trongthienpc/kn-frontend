@@ -14,14 +14,13 @@ const ListPageHeading = ({
   heading,
   toggleModal,
   onSearchKey,
-  startIndex,
-  endIndex,
   totalItemCount,
   selectedPageSize,
   changePageSize,
   pageSizes,
   setIsEdit,
 }) => {
+  console.log(totalItemCount);
   const [displayOptionsIsOpen, setDisplayOptionsIsOpen] = useState(false);
   const handleAddButton = () => {
     setIsEdit(false);
@@ -63,10 +62,9 @@ const ListPageHeading = ({
             </div>
             <div className="float-md-right pt-1">
               <span className="text-muted text-small mr-1">
-                Viewing: {startIndex + 1}-
-                {totalItemCount >= endIndex ? endIndex : totalItemCount}
-                {` | `}
-                Total: {totalItemCount}
+                Tổng số giao dịch: {totalItemCount}
+                {" | "}
+                Số lượng dòng:
               </span>
               <UncontrolledDropdown className="d-inline-block">
                 <DropdownToggle caret color="outline-dark" size="xs">

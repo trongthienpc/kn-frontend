@@ -1,43 +1,68 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { ReactTableWithPaginationCard } from "../components/common/transaction/statistic/ReactTableCard";
+import TransactionStatisticPageListing from "../components/common/transaction/statistic/TransactionStatisticPageListing";
+import { getKpis } from "../helpers/kpiHelper";
+import { createAxios } from "../helpers/tokenHelper";
+import { getStatistics } from "../helpers/transactionHelper";
 
 const Dashboard = () => {
-  const [modalBasic, setModalBasic] = useState(false);
-  const modalRef = useRef();
-  const handleModal = () => {
-    setModalBasic(!modalBasic);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [data, setData] = useState([]);
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  const transactionSelector = useSelector((state) => state.transaction);
+  const kpiSelector = useSelector((state) => state.kpi);
+  const dispatch = useDispatch();
+  const axiosJWT = createAxios(currentUser, dispatch);
+  const navigate = useNavigate();
+  const checkAccess = () => {
+    if (!currentUser?.admin) {
+      navigate("/transactions");
+    }
   };
-  return (
-    <div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum enim et
-      debitis praesentium quibusdam officiis aliquam sequi ipsum error! Dolor,
-      itaque repudiandae rerum a molestiae inventore harum veniam error modi.
-      <Button onClick={() => handleModal()}>Open modal</Button>
-      <Modal
-        isOpen={modalBasic}
-        toggle={() => setModalBasic(!modalBasic)}
-        ref={modalRef}
-      >
-        <ModalHeader>Title</ModalHeader>
-        <ModalBody>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={() => setModalBasic(false)}>
-            Do Something
-          </Button>{" "}
-          <Button color="secondary" onClick={() => setModalBasic(false)}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
+  useEffect(() => {
+    checkAccess();
+    async function fetchDataStatistic() {
+      await getStatistics(currentUser?.accessToken, dispatch, axiosJWT);
+    }
+    async function fetchKPIData() {
+      await getKpis(currentUser?.accessToken, dispatch, axiosJWT);
+    }
+    fetchDataStatistic();
+    fetchKPIData();
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    console.log(transactionSelector.statistics);
+    console.log(kpiSelector?.kpis);
+    const temp = transactionSelector.statistics?.map((s) => {
+      return {
+        ...s,
+        target: kpiSelector?.kpis?.filter((k) => k.username === s.username)[0]
+          .target,
+        kpi:
+          ((s?._sum?.quantity * s?._sum?.price) /
+            kpiSelector?.kpis?.filter((k) => k.username === s.username)[0]
+              .target) *
+          100,
+      };
+    });
+    setData(temp);
+  }, [transactionSelector, kpiSelector]);
+  return !isLoaded ? (
+    <div className="loading" />
+  ) : (
+    <>
+      <div className="disable-text-selection">
+        {/* <TransactionStatisticPageListing
+          items={transactionSelector?.statistics}
+        /> */}
+        <ReactTableWithPaginationCard products={data} />
+      </div>
+    </>
   );
 };
 

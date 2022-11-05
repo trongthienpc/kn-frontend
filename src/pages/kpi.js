@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import KPIPageListing from "../components/common/kpi/KPIPageListing";
 import ListPageHeading from "../components/common/ListPageHeading";
-import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-import * as dayjs from "dayjs";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import TransactionModal from "../containers/modals/TransactionModal";
-import { getServices } from "../helpers/serviceHelper";
+import KpiModal from "../containers/modals/KpiModal";
+import { getKpis } from "../helpers/kpiHelper";
 import { createAxios } from "../helpers/tokenHelper";
-import { getTransactions } from "../helpers/transactionHelper";
-import { Button } from "reactstrap";
-import TransactionPageListing from "../components/common/transaction/TransactionPageListing";
-
+import { getUsers } from "../helpers/userHelper";
 const pageSizes = [4, 8, 12, 20];
-
-const Transaction = ({ match }) => {
+const KPI = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [displayMode, setDisplayMode] = useState("list");
@@ -34,17 +28,14 @@ const Transaction = ({ match }) => {
   }, [selectedPageSize]);
 
   const currentUser = useSelector((state) => state.auth?.currentUser);
-  const serviceSelector = useSelector((state) => state.service);
-  const transactionSelector = useSelector((state) => state.transaction);
+  const userSelector = useSelector((state) => state.user);
+  const kpiSelector = useSelector((state) => state.kpi);
   const dispatch = useDispatch();
   const axiosJWT = createAxios(currentUser, dispatch);
 
-  console.log(transactionSelector);
-
-  // get list services
   useEffect(() => {
-    if (serviceSelector.services.length <= 0) {
-      getServices(
+    async function fetchUserData() {
+      await getUsers(
         currentUser?.accessToken,
         dispatch,
         axiosJWT,
@@ -53,11 +44,11 @@ const Transaction = ({ match }) => {
         search
       );
     }
+    fetchUserData();
   }, []);
-
   useEffect(() => {
     async function fetchData() {
-      await getTransactions(
+      await getKpis(
         currentUser?.accessToken,
         dispatch,
         axiosJWT,
@@ -71,27 +62,15 @@ const Transaction = ({ match }) => {
   }, [currentPage, selectedPageSize, search]);
 
   useEffect(() => {
-    setTotalPage(transactionSelector.totalPages);
-    setItems(transactionSelector.transactions);
-    setTotalItemCount(transactionSelector.totalTransactions);
-  }, [transactionSelector]);
-  const getIndex = (value, arr, prop) => {
-    for (let i = 0; i < arr.length; i += 1) {
-      if (arr[i][prop] === value) {
-        return i;
-      }
-    }
-    return -1;
-  };
+    setTotalPage(kpiSelector.totalPages);
+    setItems(kpiSelector.kpis);
+    setTotalItemCount(kpiSelector.totalTransactions);
+  }, [kpiSelector]);
 
   const onClickEdit = (data) => {
     setIsEdit(true);
     setTransaction(data);
     setModalOpen(!modalOpen);
-  };
-
-  const onClickDelete = (id) => {
-    console.log(id);
   };
 
   return !isLoaded ? (
@@ -100,13 +79,12 @@ const Transaction = ({ match }) => {
     <>
       <div className="disable-text-selection">
         <ListPageHeading
-          heading="Danh sách giao dịch"
+          heading="Danh sách chỉ tiêu"
           displayMode={displayMode}
           changeDisplayMode={setDisplayMode}
           changePageSize={setSelectedPageSize}
           selectedPageSize={selectedPageSize}
           totalItemCount={totalItemCount}
-          match={match}
           itemsLength={items ? items.length : 0}
           onSearchKey={(e) => {
             if (e.key === "Enter") {
@@ -117,16 +95,16 @@ const Transaction = ({ match }) => {
           pageSizes={pageSizes}
           toggleModal={() => setModalOpen(!modalOpen)}
         />
-        <TransactionModal
+        <KpiModal
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           axiosJWT={axiosJWT}
           dispatch={dispatch}
           isEdit={isEdit}
           object={transaction}
-          services={serviceSelector?.services}
+          users={userSelector?.users}
         />
-        <TransactionPageListing
+        <KPIPageListing
           items={items}
           displayMode={displayMode}
           currentPage={currentPage}
@@ -143,4 +121,4 @@ const Transaction = ({ match }) => {
   );
 };
 
-export default Transaction;
+export default KPI;

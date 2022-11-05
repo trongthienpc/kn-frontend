@@ -13,6 +13,7 @@ const Sidebar = () => {
 
   const dispatch = useDispatch();
   const menuSelector = useSelector((state) => state?.menu);
+  const currentUser = useSelector((state) => state?.auth.currentUser);
   const {
     menuHiddenBreakpoint,
     subHiddenBreakpoint,
@@ -51,12 +52,9 @@ const Sidebar = () => {
   };
 
   const filteredList = (menuItems) => {
-    // get currentUser = useSelector(state=> state.user)
-    // if (currentUser) {
-    //   return menuItems.filter(
-    //     (x) => (x.roles && x.roles.includes(currentUser.role)) || !x.roles
-    //   );
-    // }
+    if (!currentUser.admin) {
+      return menuItems.filter((x) => (x.roles && x.roles === 0) || !x.roles);
+    }
     return menuItems;
   };
 

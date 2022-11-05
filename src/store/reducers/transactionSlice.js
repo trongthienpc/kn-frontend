@@ -12,6 +12,7 @@ const transactionSlice = createSlice({
     page: 1,
     totalPages: 1,
     totalTransactions: 0,
+    statistics: [],
   },
   reducers: {
     getTransactionStart: (state, action) => {
@@ -29,6 +30,28 @@ const transactionSlice = createSlice({
       state.success = false;
       state.transaction = {};
       state.message = action.payload.message;
+    },
+    getStatisticsStart: (state, action) => {
+      state.loading = true;
+      state.message = "Get statistics started...";
+    },
+    getStatisticsSuccess: (state, action) => {
+      // toast.success(`Get ${action.payload?.totalTransactions} Transactions!`);
+      return {
+        ...state,
+        loading: false,
+        message: action.payload.message,
+        success: action.payload.success,
+        statistics: action.payload.data,
+      };
+    },
+    getStatisticsFailed: (state, action) => {
+      return {
+        ...state,
+        loading: false,
+        success: action.payload.success,
+        statistics: [],
+      };
     },
     getTransactionsStart: (state, action) => {
       state.loading = true;
@@ -129,5 +152,8 @@ export const {
   updateTransactionFailed,
   updateTransactionStart,
   updateTransactionSuccess,
+  getStatisticsFailed,
+  getStatisticsStart,
+  getStatisticsSuccess,
 } = transactionSlice.actions;
 export default transactionSlice.reducer;

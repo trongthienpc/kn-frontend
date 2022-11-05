@@ -11,6 +11,7 @@ import UserLayout from "./layout/UserLayout";
 import { useSelector } from "react-redux";
 import ServiceGroup from "./pages/serviceGroup";
 import Transaction from "./pages/transaction";
+import KPI from "./pages/kpi";
 
 function RequireAuth({ children }) {
   let currentUser = useSelector((state) => state.auth?.currentUser);
@@ -46,6 +47,7 @@ function App() {
             <Route path="/serviceGroups" element={<ServiceGroup />} />
             <Route path="/blank" element={<Blank />} />
             <Route path="/transactions" element={<Transaction />} />
+            <Route path="/kpis" element={<KPI />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
