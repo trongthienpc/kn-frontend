@@ -109,13 +109,33 @@ export const ReactTableWithPaginationCard = ({ products }) => {
         Header: "Target",
         accessor: "target",
         cellClass: "text-muted w-10 text-right",
-        Cell: (props) => <>{props?.value?.toLocaleString()}</>,
+        Cell: (props) => (
+          <span className="font-weight-bold badge badge-outline-primary">
+            {props?.value?.toLocaleString()}
+          </span>
+        ),
       },
       {
         Header: "KPI",
         accessor: "kpi",
         cellClass: "text-muted w-10 text-right",
-        Cell: (props) => <>{props?.value?.toLocaleString() + "%"}</>,
+        Cell: (props) => (
+          <span
+            className={
+              props?.value > 100
+                ? "badge badge-primary"
+                : props.value > 75
+                ? "badge badge-green"
+                : props.value > 50
+                ? "badge badge-info"
+                : props.value > 25
+                ? "badge badge-warning"
+                : "badge badge-danger"
+            }
+          >
+            {props?.value?.toLocaleString() + "%"}
+          </span>
+        ),
       },
     ],
     []

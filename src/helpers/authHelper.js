@@ -13,11 +13,28 @@ export const loginHelper = async (user, dispatch, navigate, from) => {
   dispatch(loginStarted());
   // console.log(from);
   try {
-    const res = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/${url.LOGIN}`,
-      user,
-      { withCredentials: true }
-    );
+    const instance = axios.create({
+      withCredentials: true,
+      baseURL: `${process.env.REACT_APP_BASE_URL}`,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    // const res = await axios.post(
+    //   `${process.env.REACT_APP_BASE_URL}/${url.LOGIN}`,
+    //   user,
+    //   {
+    //     withCredentials: true,
+    //     headers: {
+    //       "Access-Control-Allow-Origin": "*",
+    //       "Content-Type": "application/json",
+    //     },
+    //     credentials: "include",
+    //   }
+    // );
+    const res = await instance.post(`/${url.LOGIN}`, user);
     if (res.data?.success) {
       dispatch(loginSuccess(res.data));
       navigate(from);

@@ -7,7 +7,7 @@ import {
 import * as url from "../constants/url-helper";
 import jwt_decode from "jwt-decode";
 // refresh token
-const refreshToken = async (dispatch) => {
+const refreshToken = async (dispatch, username) => {
   try {
     dispatch(refreshTokeStart());
     const newInstance = axios.create({
@@ -17,6 +17,7 @@ const refreshToken = async (dispatch) => {
     });
     const res = await newInstance.post(
       `${process.env.REACT_APP_BASE_URL}/${url.REFRESH}`,
+      username,
       {
         withCredentials: true,
       }
@@ -45,7 +46,7 @@ export const createAxios = (user, dispatch) => {
 
       if (decodedToken?.exp < date.getTime() / 1000) {
         // console.log("time expired");
-        const data = await refreshToken(dispatch);
+        const data = await refreshToken(dispatch, user?.username);
         // console.log(data);
         const refreshUser = {
           ...user,

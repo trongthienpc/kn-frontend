@@ -38,15 +38,16 @@ const Dashboard = () => {
   useEffect(() => {
     console.log(transactionSelector.statistics);
     console.log(kpiSelector?.kpis);
+    console.log(kpiSelector?.kpis?.filter((k) => k.username === "pc-01416"));
     const temp = transactionSelector.statistics?.map((s) => {
       return {
         ...s,
         target: kpiSelector?.kpis?.filter((k) => k.username === s.username)[0]
-          .target,
+          ?.target,
         kpi:
           ((s?._sum?.quantity * s?._sum?.price) /
             kpiSelector?.kpis?.filter((k) => k.username === s.username)[0]
-              .target) *
+              ?.target) *
           100,
       };
     });
