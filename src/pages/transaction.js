@@ -39,7 +39,7 @@ const Transaction = ({ match }) => {
   const dispatch = useDispatch();
   const axiosJWT = createAxios(currentUser, dispatch);
 
-  console.log(transactionSelector);
+  // console.log(transactionSelector);
 
   // get list services
   useEffect(() => {

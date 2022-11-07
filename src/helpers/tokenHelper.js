@@ -8,21 +8,30 @@ import * as url from "../constants/url-helper";
 import jwt_decode from "jwt-decode";
 // refresh token
 const refreshToken = async (dispatch, username) => {
+  console.log(username);
   try {
     dispatch(refreshTokeStart());
-    const newInstance = axios.create({
-      baseURL: process.env.REACT_APP_BASE_URL,
+
+    // const res = await axios.post(
+    //   `${process.env.REACT_APP_BASE_URL}/${url.REFRESH}`,
+    //   username,
+    //   {
+    //     withCredentials: true,
+    //   }
+    // );
+    const instance = axios.create({
       withCredentials: true,
-      headers: { "Content-Type": "application/json" },
+      baseURL: `${process.env.REACT_APP_BASE_URL}`,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
     });
-    const res = await newInstance.post(
-      `${process.env.REACT_APP_BASE_URL}/${url.REFRESH}`,
-      username,
-      {
-        withCredentials: true,
-      }
-    );
-    // console.log(res.data);
+
+    const res = await instance.post(`/${url.REFRESH}`, { username });
+
+    console.log(res.data);
     return res.data;
   } catch (error) {
     dispatch(refreshTokeFailed(error?.response?.data?.message));
@@ -34,8 +43,8 @@ export const createAxios = (user, dispatch) => {
   // console.log(user);
   const newInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
-    // withCredentials: true,
-    // headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    headers: { "Content-Type": "application/json" },
   });
   // Add a request interceptor
   // newInstance.defaults.withCredentials = true;
@@ -45,9 +54,9 @@ export const createAxios = (user, dispatch) => {
       const decodedToken = jwt_decode(user?.accessToken);
 
       if (decodedToken?.exp < date.getTime() / 1000) {
-        // console.log("time expired");
+        console.log("time expired");
         const data = await refreshToken(dispatch, user?.username);
-        // console.log(data);
+        console.log(data);
         const refreshUser = {
           ...user,
           accessToken: data?.accessToken,

@@ -64,7 +64,7 @@ const KPI = () => {
   useEffect(() => {
     setTotalPage(kpiSelector.totalPages);
     setItems(kpiSelector.kpis);
-    setTotalItemCount(kpiSelector.totalTransactions);
+    setTotalItemCount(kpiSelector.kpis.length);
   }, [kpiSelector]);
 
   const onClickEdit = (data) => {

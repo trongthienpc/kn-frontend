@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { ReactTableWithPaginationCard } from "../components/common/transaction/statistic/ReactTableCard";
+import TransactionStatisticDataByUser from "../components/common/transaction/statistic/TransactionStatisticDataByUser";
 import TransactionStatisticPageListing from "../components/common/transaction/statistic/TransactionStatisticPageListing";
 import { getKpis } from "../helpers/kpiHelper";
 import { createAxios } from "../helpers/tokenHelper";
@@ -58,10 +59,7 @@ const Dashboard = () => {
   ) : (
     <>
       <div className="disable-text-selection">
-        {/* <TransactionStatisticPageListing
-          items={transactionSelector?.statistics}
-        /> */}
-        <ReactTableWithPaginationCard products={data} />
+        <TransactionStatisticDataByUser items={data} />
       </div>
     </>
   );
