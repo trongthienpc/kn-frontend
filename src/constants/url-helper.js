@@ -1,9 +1,10 @@
 //REGISTER
 export const POST_FAKE_REGISTER = "/post-fake-register";
 
-//LOGIN
+// USER
 export const POST_FAKE_LOGIN = "/post-fake-login";
 export const LOGIN = "auth/login";
+export const REGISTER = "auth/register";
 export const LOGOUT = "auth/logout";
 export const REFRESH = "auth/refresh";
 export const POST_FAKE_PASSWORD_FORGET = "/fake-forget-pwd";

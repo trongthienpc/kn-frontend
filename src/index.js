@@ -3,6 +3,7 @@ import "./assets/css/vendor/bootstrap.rtl.only.min.css";
 import "./assets/css/sass/themes/gogo.light.purplemonster.scss";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "react-toastify/dist/ReactToastify.css";
+import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";

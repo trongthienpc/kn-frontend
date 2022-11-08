@@ -295,6 +295,7 @@ const TransactionModal = ({
                     onChange={setFieldValue}
                   />
                   <NumericFormat
+                    readOnly
                     value={values?.price || 0}
                     allowLeadingZeros={false}
                     thousandSeparator={true}
@@ -337,6 +338,7 @@ const TransactionModal = ({
                     value={values?.discount || 0}
                   />
                   <NumericFormat
+                    readOnly
                     value={values?.discount || 0}
                     allowLeadingZeros={false}
                     thousandSeparator={true}

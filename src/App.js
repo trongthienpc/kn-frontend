@@ -1,13 +1,11 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import AppLayout from "./layout/AppLayout";
 import Blank from "./pages/blank";
 import Dashboard from "./pages/dashboard";
 import React, { Suspense, useEffect } from "react";
 import Service from "./pages/service";
 import Login from "./pages/user/login";
-import UserLayout from "./layout/UserLayout";
 import { useSelector } from "react-redux";
 import ServiceGroup from "./pages/serviceGroup";
 import Transaction from "./pages/transaction";
@@ -24,6 +22,7 @@ function RequireAuth({ children }) {
 }
 
 const LayoutContainer = React.lazy(() => import("./layout/AppLayout"));
+const AppUser = React.lazy(() => import("./pages/user/user"));
 
 function App() {
   useEffect(() => {
@@ -48,6 +47,7 @@ function App() {
             <Route path="/blank" element={<Blank />} />
             <Route path="/transactions" element={<Transaction />} />
             <Route path="/kpis" element={<KPI />} />
+            <Route path="/users" element={<AppUser />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>

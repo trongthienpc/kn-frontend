@@ -49,9 +49,9 @@ export const addUser = async (accessToken, dispatch, axiosJWT, entity) => {
 
   // action body ....
   try {
-    const result = await axiosJWT.post(`/${url.ADD_USER}`, entity, {
+    const result = await axiosJWT.post(`/${url.REGISTER}`, entity, {
       headers: { token: `Bearer ${accessToken}` },
-      withCredentials: true,
+      wihCredentials: true,
     });
     console.log(result);
     if (result?.data?.success) dispatch(addUserSuccess(result?.data?.data));

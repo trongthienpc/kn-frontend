@@ -59,5 +59,11 @@ const data = [
     label: "KPIs",
     to: `kpis`,
   },
+  {
+    id: "users",
+    icon: "simple-icon-people",
+    label: "Users Management",
+    to: `users`,
+  },
 ];
 export default data;

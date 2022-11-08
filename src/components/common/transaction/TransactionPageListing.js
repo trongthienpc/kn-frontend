@@ -100,10 +100,25 @@ const TransactionPageListing = ({
                       <Td className="text-right">
                         {product.cash?.toLocaleString()}
                       </Td>
-                      <Td className="text-right">
+                      <Td
+                        className={
+                          Object.prototype.toString.call(product.debt) ===
+                          "[object Number]"
+                            ? "text-primary"
+                            : "text-info"
+                        }
+                      >
                         {product.debt?.toLocaleString()}
                       </Td>
-                      <Td className="text-center">
+                      <Td
+                        className={
+                          Object.prototype.toString.call(
+                            product.transactionDate
+                          ) === "[object Number]"
+                            ? "text-primary"
+                            : "text-info"
+                        }
+                      >
                         {dayjs(product.transactionDate).format("DD/MM/YYYY")}
                       </Td>
                       <Td className="text-right">{product.fullName}</Td>

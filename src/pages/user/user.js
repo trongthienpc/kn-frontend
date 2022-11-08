@@ -1,76 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import ListPageHeading from "../components/common/ListPageHeading";
-import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-import * as dayjs from "dayjs";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import TransactionModal from "../containers/modals/TransactionModal";
-import { getServices } from "../helpers/serviceHelper";
-import { createAxios } from "../helpers/tokenHelper";
-import { getTransactions } from "../helpers/transactionHelper";
-import { Button } from "reactstrap";
-import TransactionPageListing from "../components/common/transaction/TransactionPageListing";
-import ResponsiveTable from "../components/common/table/ResponsiveTable";
+import UserModal from "../../containers/modals/UserModal";
+// import { getUsers } from "../../helpers/userHelper";
+import ListPageHeading from "../../components/common/ListPageHeading";
+import ResponsiveTable from "../../components/common/table/ResponsiveTable";
+import { createAxios } from "../../helpers/tokenHelper";
+import { getUsers } from "../../helpers/userHelper";
 
 const pageSizes = [4, 8, 12, 20];
 
-const headers = [
-  "Khách hàng",
-  "Tên dịch vụ",
-  "Giá tiền",
-  "Số lượng",
-  "Số tiền giảm",
-  "Số tiền mặt",
-  "Số tiền nợ",
-  "Ngày giao dịch",
-  "Thưc hiện",
-];
+const headers = ["Mã nhân viên", "Tên nhân viên", "Ngày tạo", "Người tạo"];
 
 const cols = [
   {
-    name: "customerName",
+    name: "username",
     typeof: "string",
   },
   {
-    name: "serviceName",
+    name: "name",
     typeof: "string",
   },
   {
-    name: "price",
-    typeof: "number",
-  },
-  {
-    name: "quantity",
-    typeof: "number",
-  },
-  {
-    name: "discount",
-    typeof: "number",
-  },
-  {
-    name: "cash",
-    typeof: "number",
-  },
-  {
-    name: "debt",
-    typeof: "number",
-  },
-  {
-    name: "transactionDate",
+    name: "createdDate",
     typeof: "date",
   },
   {
-    name: "fullName",
+    name: "createdBy",
     typeof: "string",
   },
 ];
 
-const Transaction = ({ match }) => {
+const User = ({ match }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [displayMode, setDisplayMode] = useState("list");
-
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPageSize, setSelectedPageSize] = useState(8);
   const [totalPage, setTotalPage] = useState(1);
@@ -79,15 +42,14 @@ const Transaction = ({ match }) => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [transaction, setTransaction] = useState({});
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedPageSize]);
 
   const currentUser = useSelector((state) => state.auth?.currentUser);
-  const serviceSelector = useSelector((state) => state.service);
-  const transactionSelector = useSelector((state) => state.transaction);
+  const userSelector = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const axiosJWT = createAxios(currentUser, dispatch);
 
@@ -95,8 +57,8 @@ const Transaction = ({ match }) => {
 
   // get list services
   useEffect(() => {
-    if (serviceSelector.services.length <= 0) {
-      getServices(
+    if (userSelector.users.length <= 0) {
+      getUsers(
         currentUser?.accessToken,
         dispatch,
         axiosJWT,
@@ -109,7 +71,7 @@ const Transaction = ({ match }) => {
 
   useEffect(() => {
     async function fetchData() {
-      await getTransactions(
+      await getUsers(
         currentUser?.accessToken,
         dispatch,
         axiosJWT,
@@ -123,27 +85,15 @@ const Transaction = ({ match }) => {
   }, [currentPage, selectedPageSize, search]);
 
   useEffect(() => {
-    setTotalPage(transactionSelector.totalPages);
-    setItems(transactionSelector.transactions);
-    setTotalItemCount(transactionSelector.totalTransactions);
-  }, [transactionSelector]);
-  const getIndex = (value, arr, prop) => {
-    for (let i = 0; i < arr.length; i += 1) {
-      if (arr[i][prop] === value) {
-        return i;
-      }
-    }
-    return -1;
-  };
+    setTotalPage(userSelector.totalPages);
+    setItems(userSelector.users);
+    setTotalItemCount(userSelector.totalUsers);
+  }, [userSelector]);
 
   const onClickEdit = (data) => {
     setIsEdit(true);
-    setTransaction(data);
+    setUser(data);
     setModalOpen(!modalOpen);
-  };
-
-  const onClickDelete = (id) => {
-    console.log(id);
   };
 
   return !isLoaded ? (
@@ -152,9 +102,7 @@ const Transaction = ({ match }) => {
     <>
       <div className="disable-text-selection">
         <ListPageHeading
-          heading="Danh sách giao dịch"
-          displayMode={displayMode}
-          changeDisplayMode={setDisplayMode}
+          heading="Danh sách người dùng"
           changePageSize={setSelectedPageSize}
           selectedPageSize={selectedPageSize}
           totalItemCount={totalItemCount}
@@ -169,14 +117,13 @@ const Transaction = ({ match }) => {
           pageSizes={pageSizes}
           toggleModal={() => setModalOpen(!modalOpen)}
         />
-        <TransactionModal
+        <UserModal
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           axiosJWT={axiosJWT}
           dispatch={dispatch}
           isEdit={isEdit}
-          object={transaction}
-          services={serviceSelector?.services}
+          object={user}
         />
         {/* <TransactionPageListing
           items={items}
@@ -190,7 +137,6 @@ const Transaction = ({ match }) => {
           headers={headers}
           cols={cols}
           items={items}
-          displayMode={displayMode}
           currentPage={currentPage}
           totalPage={totalPage}
           onChangePage={setCurrentPage}
@@ -205,4 +151,4 @@ const Transaction = ({ match }) => {
   );
 };
 
-export default Transaction;
+export default User;

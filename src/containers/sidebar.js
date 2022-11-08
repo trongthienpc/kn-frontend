@@ -21,7 +21,25 @@ const Sidebar = () => {
     selectedMenuHasSubItems,
   } = menuSelector;
 
+  const setSelectedLiActive = (callback) => {
+    const selectedParentNoSubItem = document.querySelector(
+      ".main-menu  li a.active"
+    );
+
+    console.log(selectedParentNoSubItem);
+
+    if (selectedParentNoSubItem != null) {
+      let id = selectedParentNoSubItem.getAttribute("data-flag");
+      console.log(id);
+      setSelectedParentMenu(id);
+    } else if (selectedParentMenu === "") {
+      let id = menuItems[0].id;
+      setSelectedParentMenu(id);
+    }
+  };
+
   useEffect(() => {
+    setSelectedLiActive();
     window.addEventListener("resize", handleWindowResize);
     handleWindowResize();
   }, []);
@@ -76,6 +94,7 @@ const Sidebar = () => {
     setViewingParentMenu(id);
     setSelectedParentMenu(id);
   };
+
   return (
     <div className="sidebar">
       <div className="main-menu">
