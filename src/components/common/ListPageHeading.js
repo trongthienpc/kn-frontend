@@ -20,7 +20,7 @@ const ListPageHeading = ({
   pageSizes,
   setIsEdit,
 }) => {
-  console.log(totalItemCount);
+  // console.log(totalItemCount);
   const [displayOptionsIsOpen, setDisplayOptionsIsOpen] = useState(false);
   const handleAddButton = () => {
     setIsEdit(false);
@@ -62,16 +62,16 @@ const ListPageHeading = ({
             </div>
             <div className="float-md-right pt-1">
               <span className="text-muted text-small mr-1">
-                Tổng số giao dịch: {totalItemCount}
+                Tổng số: {totalItemCount}
                 {" | "}
-                Số lượng dòng:
+                Kích thước:
               </span>
               <UncontrolledDropdown className="d-inline-block">
                 <DropdownToggle caret color="outline-dark" size="xs">
                   {selectedPageSize}
                 </DropdownToggle>
                 <DropdownMenu right>
-                  {pageSizes.map((size, index) => {
+                  {pageSizes?.map((size, index) => {
                     return (
                       <DropdownItem
                         key={index}

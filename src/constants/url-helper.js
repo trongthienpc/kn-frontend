@@ -7,6 +7,7 @@ export const LOGIN = "auth/login";
 export const REGISTER = "auth/register";
 export const LOGOUT = "auth/logout";
 export const REFRESH = "auth/refresh";
+
 export const POST_FAKE_PASSWORD_FORGET = "/fake-forget-pwd";
 export const POST_FAKE_JWT_PASSWORD_FORGET = "/jwt-forget-pwd";
 export const SOCIAL_LOGIN = "/social-login";
@@ -50,6 +51,7 @@ export const GET_USER = "user";
 export const DEL_USER = "user";
 export const ADD_USER = "user";
 export const UPDATE_USER = "user";
+export const RESET_PWD = "user/reset-password";
 
 // function
 export const FUNCTIONS = "function";

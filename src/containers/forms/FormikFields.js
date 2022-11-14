@@ -24,6 +24,7 @@ const FormikReactSelect = ({
   onChange,
   onBlur,
 }) => {
+  console.log(className);
   const handleChange = (val) => {
     onChange(name, val);
   };

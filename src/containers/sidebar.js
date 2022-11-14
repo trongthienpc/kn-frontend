@@ -26,11 +26,11 @@ const Sidebar = () => {
       ".main-menu  li a.active"
     );
 
-    console.log(selectedParentNoSubItem);
+    // console.log(selectedParentNoSubItem);
 
     if (selectedParentNoSubItem != null) {
       let id = selectedParentNoSubItem.getAttribute("data-flag");
-      console.log(id);
+      // console.log(id);
       setSelectedParentMenu(id);
     } else if (selectedParentMenu === "") {
       let id = menuItems[0].id;

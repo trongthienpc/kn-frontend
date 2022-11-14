@@ -121,6 +121,7 @@ const UserModal = ({
               <FormGroup className="error-l-100">
                 <Label>Mã nhân viên</Label>
                 <Field
+                  readOnly={isEdit ? true : false}
                   className="form-control"
                   name="username"
                   id="username"
@@ -148,36 +149,40 @@ const UserModal = ({
                   </div>
                 )}
               </FormGroup>
-              <FormGroup className="error-l-100">
-                <Label>Mật khẩu</Label>
-                <Field
-                  className="form-control"
-                  name="password"
-                  id="password"
-                  type="password"
-                  value={values?.password || ""}
-                />
-                {errors.password && touched.password && (
-                  <div className="invalid-feedback d-block">
-                    {errors.password}
-                  </div>
-                )}
-              </FormGroup>
-              <FormGroup className="error-l-100">
-                <Label>Nhập lại mật khẩu</Label>
-                <Field
-                  className="form-control"
-                  name="password1"
-                  id="password1"
-                  type="password"
-                  value={values?.password1 || ""}
-                />
-                {errors.password1 && touched.password1 && (
-                  <div className="invalid-feedback d-block">
-                    {errors.password1}
-                  </div>
-                )}
-              </FormGroup>
+              {!isEdit && (
+                <FormGroup className="error-l-100">
+                  <Label>Mật khẩu</Label>
+                  <Field
+                    className="form-control"
+                    name="password"
+                    id="password"
+                    type="password"
+                    value={values?.password || ""}
+                  />
+                  {errors.password && touched.password && (
+                    <div className="invalid-feedback d-block">
+                      {errors.password}
+                    </div>
+                  )}
+                </FormGroup>
+              )}
+              {!isEdit && (
+                <FormGroup className="error-l-100">
+                  <Label>Nhập lại mật khẩu</Label>
+                  <Field
+                    className="form-control"
+                    name="password1"
+                    id="password1"
+                    type="password"
+                    value={values?.password1 || ""}
+                  />
+                  {errors.password1 && touched.password1 && (
+                    <div className="invalid-feedback d-block">
+                      {errors.password1}
+                    </div>
+                  )}
+                </FormGroup>
+              )}
 
               <div className="d-flex justify-content-between mt-5">
                 <Button

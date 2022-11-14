@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getServiceGroups } from "../helpers/serviceGroupHelper";
 import { createAxios } from "../helpers/tokenHelper";
+import { checkAccess } from "../helpers/userHelper";
 
 const Blank = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,8 +14,9 @@ const Blank = () => {
   console.log("object");
   const groupSelector = useSelector((state) => state.group);
   const axiosJWT = createAxios(currentUser, dispatch);
-
+  const navigate = useNavigate();
   useEffect(() => {
+    checkAccess({ navigate, currentUser });
     getServiceGroups(
       currentUser?.accessToken,
       dispatch,

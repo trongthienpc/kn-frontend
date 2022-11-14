@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-import { Row } from "reactstrap";
+import { Button, Row } from "reactstrap";
 import Pagination from "../Pagination";
 import * as dayjs from "dayjs";
 import { Colxx } from "../CustomBootstrap";
@@ -13,7 +13,11 @@ const ResponsiveTable = ({
   totalPage,
   onChangePage,
   onClickEdit,
+  onClickReset,
 }) => {
+  const testEvent = (product) => {
+    console.log(product);
+  };
   return (
     <Row>
       <Colxx xxs="12">
@@ -67,31 +71,44 @@ const ResponsiveTable = ({
                             className={
                               col?.typeof === "number"
                                 ? "text-right"
-                                : col?.typeof === "date"
+                                : col?.typeof === "date" ||
+                                  col?.typeof === "function"
                                 ? "text-center"
                                 : "text-left"
                             }
                             key={index}
                           >
-                            {col?.typeof === "number"
-                              ? product[
+                            {col?.typeof === "number" ? (
+                              product[
+                                Object.keys(product).filter(
+                                  (key) => key === col?.name
+                                )
+                              ]?.toLocaleString()
+                            ) : col?.typeof === "date" ? (
+                              dayjs(
+                                product[
                                   Object.keys(product).filter(
                                     (key) => key === col?.name
                                   )
-                                ]?.toLocaleString()
-                              : col?.typeof === "date"
-                              ? dayjs(
-                                  product[
-                                    Object.keys(product).filter(
-                                      (key) => key === col?.name
-                                    )
-                                  ]
-                                ).format("DD/MM/YYYY")
-                              : product[
-                                  Object.keys(product).filter(
-                                    (key) => key === col?.name
-                                  )
-                                ]}
+                                ]
+                              ).format("DD/MM/YYYY")
+                            ) : col?.typeof === "string" ? (
+                              product[
+                                Object.keys(product).filter(
+                                  (key) => key === col?.name
+                                )
+                              ]
+                            ) : (
+                              <Button
+                                color="primary"
+                                size="xs"
+                                outline
+                                className="default"
+                                onClick={() => onClickReset(product)}
+                              >
+                                {col?.label}
+                              </Button>
+                            )}
                           </Td>
                         );
                       })}

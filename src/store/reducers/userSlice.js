@@ -108,6 +108,25 @@ const userSlice = createSlice({
       state.message = action.message;
       state.success = false;
     },
+    resetPasswordStart: (state, action) => {
+      state.loading = true;
+      state.message = "Bắt đầu reset mật khẩu ...";
+    },
+    resetPasswordSuccess: (state, action) => {
+      toast.success("Reset mật khẩu thành công");
+      state.loading = false;
+      state.success = true;
+      state.message = "Reset mật khẩu thành công";
+      state.users = [
+        action.payload,
+        ...state.users.filter((x) => x.id !== action.payload.id),
+      ];
+    },
+    resetPasswordFailed: (state, action) => {
+      toast.error("Reset mật khẩu thất bại");
+      state.loading = false;
+      state.message = action.payload?.message;
+    },
   },
 });
 
@@ -127,5 +146,8 @@ export const {
   updateUserFailed,
   updateUserStart,
   updateUserSuccess,
+  resetPasswordFailed,
+  resetPasswordStart,
+  resetPasswordSuccess,
 } = userSlice.actions;
 export default userSlice.reducer;

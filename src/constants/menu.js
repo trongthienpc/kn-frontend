@@ -39,12 +39,14 @@ const data = [
     icon: "iconsminds-bag-quantity",
     label: "Nhóm dịch vụ",
     to: `serviceGroups`,
+    roles: 1,
   },
   {
     id: "services",
     icon: "iconsminds-bucket",
     label: "Dịch vụ",
     to: `services`,
+    roles: 1,
   },
 
   {
@@ -64,6 +66,14 @@ const data = [
     icon: "simple-icon-people",
     label: "Users Management",
     to: `users`,
+    roles: 1,
+  },
+  {
+    id: "test",
+    icon: "simple-icon-people",
+    label: "Test Page",
+    to: `test`,
+    roles: 1,
   },
 ];
 export default data;

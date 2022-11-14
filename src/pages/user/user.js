@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import UserModal from "../../containers/modals/UserModal";
 // import { getUsers } from "../../helpers/userHelper";
 import ListPageHeading from "../../components/common/ListPageHeading";
 import ResponsiveTable from "../../components/common/table/ResponsiveTable";
 import { createAxios } from "../../helpers/tokenHelper";
-import { getUsers } from "../../helpers/userHelper";
+import { checkAccess, getUsers, resetPassword } from "../../helpers/userHelper";
+import { useNavigate } from "react-router-dom";
 
 const pageSizes = [4, 8, 12, 20];
 
-const headers = ["Mã nhân viên", "Tên nhân viên", "Ngày tạo", "Người tạo"];
+const headers = [
+  "Mã nhân viên",
+  "Tên nhân viên",
+  "Ngày tạo",
+  "Người tạo",
+  "Ngày cập nhật",
+  "Người cập nhật",
+  "Thao tác",
+];
 
 const cols = [
   {
@@ -28,6 +37,19 @@ const cols = [
   {
     name: "createdBy",
     typeof: "string",
+  },
+  {
+    name: "updatedDate",
+    typeof: "date",
+  },
+  {
+    name: "updatedBy",
+    typeof: "string",
+  },
+  {
+    name: "reset",
+    label: "Reset Password",
+    typeof: "function",
   },
 ];
 
@@ -52,11 +74,12 @@ const User = ({ match }) => {
   const userSelector = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const axiosJWT = createAxios(currentUser, dispatch);
-
+  const navigate = useNavigate();
   // console.log(transactionSelector);
 
   // get list services
   useEffect(() => {
+    checkAccess({ navigate, currentUser });
     if (userSelector.users.length <= 0) {
       getUsers(
         currentUser?.accessToken,
@@ -94,6 +117,16 @@ const User = ({ match }) => {
     setIsEdit(true);
     setUser(data);
     setModalOpen(!modalOpen);
+  };
+
+  const onClickReset = async (data) => {
+    console.log(data);
+    let { updatedBy, ...user } = data;
+    updatedBy = currentUser.name;
+    await resetPassword(currentUser?.accessToken, dispatch, axiosJWT, {
+      ...user,
+      updatedBy,
+    });
   };
 
   return !isLoaded ? (
@@ -141,6 +174,7 @@ const User = ({ match }) => {
           totalPage={totalPage}
           onChangePage={setCurrentPage}
           onClickEdit={onClickEdit}
+          onClickReset={onClickReset}
         />
 
         {/* <TransactionTableDivided /> */}

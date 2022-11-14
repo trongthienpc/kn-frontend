@@ -101,6 +101,7 @@ const TransactionModal = ({
   const currentUser = useSelector((state) => state.auth?.currentUser);
   const [transaction, setTransaction] = useState(object);
   const autoFocusRef = useRef();
+
   useEffect(() => {
     const temp = services.map((s) => {
       return { value: s.id, label: s.serviceName };

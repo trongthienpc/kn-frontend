@@ -8,6 +8,7 @@ import TransactionStatisticPageListing from "../components/common/transaction/st
 import { getKpis } from "../helpers/kpiHelper";
 import { createAxios } from "../helpers/tokenHelper";
 import { getStatistics } from "../helpers/transactionHelper";
+import { checkAccess } from "../helpers/userHelper";
 
 const Dashboard = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -18,13 +19,9 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const axiosJWT = createAxios(currentUser, dispatch);
   const navigate = useNavigate();
-  const checkAccess = () => {
-    if (!currentUser?.admin) {
-      navigate("/transactions");
-    }
-  };
+
   useEffect(() => {
-    checkAccess();
+    checkAccess({ navigate, currentUser });
     async function fetchDataStatistic() {
       await getStatistics(currentUser?.accessToken, dispatch, axiosJWT);
     }
@@ -37,9 +34,6 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    console.log(transactionSelector.statistics);
-    console.log(kpiSelector?.kpis);
-    console.log(kpiSelector?.kpis?.filter((k) => k.username === "pc-01416"));
     const temp = transactionSelector.statistics?.map((s) => {
       return {
         ...s,

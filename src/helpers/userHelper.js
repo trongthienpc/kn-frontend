@@ -9,6 +9,9 @@ import {
   getUsersFailed,
   getUsersStart,
   getUsersSuccess,
+  resetPasswordFailed,
+  resetPasswordStart,
+  resetPasswordSuccess,
   updateUserFailed,
   updateUserStart,
   updateUserSuccess,
@@ -97,5 +100,39 @@ export const updateUser = async (accessToken, dispatch, axiosJWT, entity) => {
     dispatch(updateUserSuccess(result?.data?.data));
   } catch (errors) {
     dispatch(updateUserFailed(errors?.response?.data?.message));
+  }
+};
+
+// @desc update user
+// @route baseURL/user/:id
+// @param {string} user id
+export const resetPassword = async (
+  accessToken,
+  dispatch,
+  axiosJWT,
+  entity
+) => {
+  // start update customer flag ...
+  dispatch(resetPasswordStart());
+
+  try {
+    // update customer body ...
+    const result = await axiosJWT.post(`/${url.RESET_PWD}`, entity, {
+      headers: { token: `Bearer ${accessToken}` },
+      withCredentials: true,
+    });
+
+    dispatch(resetPasswordSuccess(result?.data?.data));
+  } catch (errors) {
+    dispatch(resetPasswordFailed(errors?.response?.data?.message));
+  }
+};
+
+// @desc check user role
+// @route
+// @param navigate, current User
+export const checkAccess = ({ navigate, currentUser }) => {
+  if (!currentUser?.admin) {
+    navigate("/transactions");
   }
 };

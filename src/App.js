@@ -1,6 +1,12 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import Blank from "./pages/blank";
 import Dashboard from "./pages/dashboard";
 import React, { Suspense, useEffect } from "react";
@@ -23,7 +29,8 @@ function RequireAuth({ children }) {
 
 const LayoutContainer = React.lazy(() => import("./layout/AppLayout"));
 const AppUser = React.lazy(() => import("./pages/user/user"));
-
+const TestPage = React.lazy(() => import("./pages/test"));
+const FormPage = React.lazy(() => import("./pages/form.js"));
 function App() {
   useEffect(() => {
     document.body.classList.add("ltr");
@@ -48,6 +55,7 @@ function App() {
             <Route path="/transactions" element={<Transaction />} />
             <Route path="/kpis" element={<KPI />} />
             <Route path="/users" element={<AppUser />} />
+            <Route path="/test" element={<FormPage />} />
           </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
